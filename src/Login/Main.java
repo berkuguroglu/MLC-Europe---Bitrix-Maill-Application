@@ -9,6 +9,8 @@ import javafx.stage.Stage;
 
 public class Main extends Application implements Login.Interfaces.LoginConnection {
 
+
+
     @Override
     public void start(Stage primaryStage) throws Exception{
         FXMLLoader loader= new FXMLLoader(getClass().getResource("Views/login.fxml"));
@@ -39,6 +41,7 @@ public class Main extends Application implements Login.Interfaces.LoginConnectio
     public boolean loginClicked(boolean clicked)
     {
         System.out.println(clicked);
+        Database.databaseConnection db_class = new Database.databaseConnection();
         return true;
     }
 
