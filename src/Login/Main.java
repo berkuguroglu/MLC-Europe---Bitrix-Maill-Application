@@ -19,6 +19,10 @@ public class Main extends Application implements Login.Interfaces.LoginConnectio
         primaryStage.setScene(new Scene(root, primaryStage.getWidth(), primaryStage.getHeight()));
         primaryStage.setResizable(false);
         Login.Controller cont = loader.getController();
+        //
+        //asd   
+        //asd
+        //
         Platform.runLater(() -> {
             cont.setStage(this);
             primaryStage.show();
