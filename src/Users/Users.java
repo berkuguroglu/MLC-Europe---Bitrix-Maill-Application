@@ -5,11 +5,11 @@ import java.util.ArrayList;
 
 public class Users {
 
-   static private Users CURRENT_USER;
+   static private Users CURRENT_USER = null;
    private ArrayList<String[]> customers;
-   private String USER_NAME;
-   private String USER_PASS;
-   private int USER_ID;
+   private final String USER_NAME;
+   private final String USER_PASS;
+   private final int USER_ID;
    public Users(int USER_ID, String USER_NAME, String USER_PASS)
    {
        Users.CURRENT_USER = this;
@@ -17,6 +17,11 @@ public class Users {
        this.USER_PASS = USER_PASS;
        this.USER_ID = USER_ID;
 
+   }
+
+   public static Users getCurrentUser()
+   {
+       return CURRENT_USER;
    }
 
 }

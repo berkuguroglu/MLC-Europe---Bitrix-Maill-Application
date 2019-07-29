@@ -15,7 +15,7 @@ public class Main extends Application implements Login.Interfaces.LoginConnectio
     public void start(Stage primaryStage) throws Exception{
         FXMLLoader loader= new FXMLLoader(getClass().getResource("Views/login.fxml"));
         Parent root = loader.load();
-        primaryStage.setTitle("Hello World");
+        primaryStage.setTitle("MLC Europe");
         primaryStage.setScene(new Scene(root, primaryStage.getWidth(), primaryStage.getHeight()));
         primaryStage.setResizable(false);
         Login.Controller cont = loader.getController();
@@ -38,10 +38,16 @@ public class Main extends Application implements Login.Interfaces.LoginConnectio
     }
 
     @Override
-    public boolean loginClicked(boolean clicked)
+    public boolean loginClicked(boolean clicked, String username, String pass)
     {
         System.out.println(clicked);
         Database.databaseConnection db_class = new Database.databaseConnection();
+        db_class.openConnection();
+        try {
+            db_class.checkForUsers(username, pass);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return true;
     }
 

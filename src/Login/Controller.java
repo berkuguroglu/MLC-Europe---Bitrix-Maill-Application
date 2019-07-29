@@ -50,9 +50,9 @@ public class Controller implements EventHandler<ActionEvent> {
         if(this.NODE.getId().contentEquals("loginbutton"))
         {
             if(!USER_NAME.getText().isEmpty()  && !USER_PASS.getText().isEmpty())
-                connection.loginClicked(true);
+                connection.loginClicked(true, USER_NAME.getText(), USER_PASS.getText());
             else
-                connection.loginClicked(false);
+                connection.loginClicked(false, USER_NAME.getText(), USER_PASS.getText());
 
         }
     }
