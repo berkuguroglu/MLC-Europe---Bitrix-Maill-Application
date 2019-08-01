@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ScrollBar?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1400.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Pane layoutX="15.0" layoutY="14.0" opacity="0.67" prefHeight="74.0" prefWidth="1371.0" style="-fx-background-color: #2E8DA4;">
+         <children>
+            <ImageView fitHeight="56.0" fitWidth="200.0" layoutX="14.0" layoutY="9.0">
+               <image>
+                  <Image url="@mlcicon.png" />
+               </image>
+            </ImageView>
+            <TextField alignment="CENTER" editable="false" layoutX="1170.0" layoutY="23.0" style="-fx-background-color: #2E8DA4;" text="USER NAME">
+               <font>
+                  <Font name="Ebrima Bold" size="14.0" />
+               </font>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+            </TextField>
+         </children>
+      </Pane>
+      <TableView fx:id="table" layoutX="9.0" layoutY="150.0" prefHeight="580.0" prefWidth="1371.0">
+        <columns>
+          <TableColumn fx:id="company_name" prefWidth="206.0" text="Company Name" />
+            <TableColumn fx:id="company_type" minWidth="0.0" prefWidth="194.0" text="Company Type" />
+            <TableColumn fx:id="country" prefWidth="142.0" text="Country" />
+            <TableColumn prefWidth="171.0" text="E-mail" />
+            <TableColumn fx:id="email" prefWidth="219.0" text="Responsible Person" />
+          <TableColumn fx:id="templates" prefWidth="121.0" text="Templates" />
+            <TableColumn fx:id="how_often" prefWidth="132.0" text="How Often" />
+            <TableColumn fx:id="pre_sales" prefWidth="81.0" text="Pre-Sales" />
+            <TableColumn fx:id="sales" prefWidth="104.0" text="Sales" />
+        </columns>
+      </TableView>
+      <ImageView fitHeight="25.0" fitWidth="27.0" layoutX="1338.0" layoutY="110.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+         </image>
+      </ImageView>
+      <ScrollBar layoutX="1373.0" layoutY="171.0" orientation="VERTICAL" prefHeight="555.0" prefWidth="14.0" />
+      <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fitHeight="28.0" fitWidth="27.0" layoutX="913.0" layoutY="106.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+         </image>
+      </ImageView>
+      <TextField layoutX="545.0" layoutY="107.0" prefHeight="25.0" prefWidth="363.0" promptText="Search" />
+      <Button layoutX="1277.0" layoutY="740.0" mnemonicParsing="false" opacity="0.65" prefHeight="21.0" prefWidth="96.0" style="-fx-background-color: #2E8DA4;" text="Save" textAlignment="CENTER" textFill="WHITE">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Button>
+      <Button layoutX="1229.0" layoutY="105.0" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="30.0" prefWidth="96.0" style="-fx-background-color: #ff6961;" text="REFRESH" textFill="WHITE">
+         <font>
+            <Font name="Ebrima Bold" size="13.0" />
+         </font>
+      </Button>
+   </children>
+</AnchorPane>

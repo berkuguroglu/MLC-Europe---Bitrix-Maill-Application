@@ -3,10 +3,12 @@ package Database;
 
 import Users.Users;
 import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 
 import java.sql.*;
+import java.util.concurrent.ExecutionException;
 
 public class databaseConnection {
 
@@ -20,6 +22,7 @@ public class databaseConnection {
     private String password = "admin";
     private String databasename = "mailapp";
     private Thread database_thread;
+    private boolean logged = false;
     private boolean operation;
 
 
@@ -51,30 +54,37 @@ public class databaseConnection {
         }
 
     }
-    public void checkForUsers(String username, String pass) throws InterruptedException {
+    public boolean checkForUsers(String username, String pass) throws InterruptedException, ExecutionException {
 
         this.operation = true;
-        this.database_thread = new Thread(new Runnable() {
+        Task<Boolean> task = this.executeTask(username, pass);
+        this.database_thread = new Thread(task);
+        this.database_thread.start();
+        return task.get();
 
+    }
+    private Task<Boolean> executeTask(String username, String pass)
+    {
+        Task<Boolean> task = new Task<Boolean>() {
             @Override
-            public void run() {
+            protected Boolean call() throws Exception {
 
 
-                if(operation) {
+                try {
 
-                    try {
-
+                    if (!this.isCancelled()) {
                         String query = "SELECT * FROM USERS_ADMIN WHERE username =" + "'" + username + "'" + " AND " + "pass=" + "'" + pass + "'";
-                        System.out.println("check");
                         rs = st.executeQuery(query);
                         boolean flag = false;
                         while (rs.next()) {
 
-                            new Users(rs.getInt("id"), username, pass);
+                            Users ref = new Users(rs.getInt("id"), username, pass);
+                            System.out.println(ref);
                             flag = true;
+                            logged = true;
+                            return true;
                         }
-                        if(!flag)
-                        {
+                        if (!flag) {
                             Platform.runLater(new Runnable() {
                                 @Override
                                 public void run() {
@@ -84,24 +94,25 @@ public class databaseConnection {
                                     alert.setHeaderText("");
                                     alert.setContentText("Your password or username is wrong.");
                                     alert.showAndWait();
+
                                 }
                             });
+                            return false;
 
                         }
-
-                    } catch (Exception ex) {
-                        System.out.print(ex);
-
+                        this.cancel();
                     }
                 }
+                catch(SQLException e){
+                    e.printStackTrace();
+                }
+
+                return true;
 
             }
-        });
-        this.database_thread.start();
 
-
-
-
+        };
+        return task;
     }
 
 }
