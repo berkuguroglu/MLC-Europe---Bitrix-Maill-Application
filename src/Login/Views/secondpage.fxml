@@ -13,7 +13,7 @@
 <?import javafx.scene.text.Font?>
 
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1400.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1400.0" xmlns="http://javafx.com/javafx/11.0.1" fx:controller="secondPage.Controller" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <Pane layoutX="15.0" layoutY="14.0" opacity="0.67" prefHeight="74.0" prefWidth="1371.0" style="-fx-background-color: #2E8DA4;">
          <children>

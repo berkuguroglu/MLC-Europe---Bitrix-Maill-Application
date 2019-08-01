@@ -1,28 +1,43 @@
 package restRequest;
 
+import com.goebl.david.Request;
+import com.goebl.david.Response;
+import com.goebl.david.Webb;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 public class request
 {
     private final String USER_AGENT = "Mozilla/5.0";
     private String URL;
-    private URL REQUEST_ADDRESS;
+    private Webb webb;
+    /*private URL REQUEST_ADDRESS;
     private HttpURLConnection connection;
-    private StringBuffer result;
-    public request() throws IOException
+    */
+    private String result;
+    public request(String URL) throws IOException
     {
+        this.URL = URL;
+        webb = Webb.create();
+        this.sendGETrequest();
+        /*
         this.REQUEST_ADDRESS = new URL(this.URL);
         result = new StringBuffer();
         this.sendGETrequest();
+        Webb.create();
+
+         */
 
 
     }
-    public boolean sendGETrequest() throws IOException {
+   /* private boolean sendGETrequest() throws IOException {
         connection = (HttpURLConnection) this.REQUEST_ADDRESS.openConnection();
         this.connection.setRequestMethod("GET");
         this.connection.setRequestProperty("USER-AGENT", USER_AGENT);
@@ -35,6 +50,28 @@ public class request
         return true;
         else return false;
 
+    } */
+    private boolean sendGETrequest()
+    {
+
+        HashMap<String, Object> maps = new HashMap<>();
+        maps.put("id", 720);
+        String[] str = new String[2];
+        str[0] = "ID";
+        str[1] = "TITLE";
+        for(int i = 0; i<100; i++)
+        {
+            Request response = webb.get(this.URL);
+            System.out.println(response.getUri());
+            Response<String> rest = response.asString();
+            System.out.println(rest.getBody());
+        }
+        return true;
+
+    }
+    public String getResult()
+    {
+        return this.result;
     }
 
 

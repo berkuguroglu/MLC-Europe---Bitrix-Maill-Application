@@ -1,5 +1,6 @@
 package Login;
 
+import Login.Bitrix.bitrixAPI;
 import Users.Users;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -64,8 +65,10 @@ public class Main extends Application implements Login.Interfaces.LoginConnectio
         try {
             if(db_class.checkForUsers(username, pass))
             {
-                    openSecondPage();
-                    this.primaryStage.close();
+                    //openSecondPage();
+                    Thread thread = new Thread(new bitrixAPI());
+                    thread.start();
+                    //this.primaryStage.close();
 
             }
 
@@ -73,9 +76,8 @@ public class Main extends Application implements Login.Interfaces.LoginConnectio
             e.printStackTrace();
         } catch (ExecutionException e) {
             e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
+
         return true;
     }
 
