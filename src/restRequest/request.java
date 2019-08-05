@@ -53,19 +53,9 @@ public class request
     } */
     private boolean sendGETrequest()
     {
-
-        HashMap<String, Object> maps = new HashMap<>();
-        maps.put("id", 720);
-        String[] str = new String[2];
-        str[0] = "ID";
-        str[1] = "TITLE";
-        for(int i = 0; i<100; i++)
-        {
-            Request response = webb.get(this.URL);
-            System.out.println(response.getUri());
-            Response<String> rest = response.asString();
-            System.out.println(rest.getBody());
-        }
+        Request response = webb.get(this.URL);
+        Response<String> rest = response.asString();
+        this.result = rest.getBody();
         return true;
 
     }

@@ -11,39 +11,64 @@ import java.util.ArrayList;
 
 public class bitrixAPI extends Task<ArrayList<String>> {
 
+
+    private ArrayList<JsonArray> company_list;
+    private int iteration = 50;
     private final String AUTH = "https://mlcomponents.bitrix24.com/rest/12/b6pt3a9mlu6prvpl";
-    private String firstMethod = "/crm.company.list";
-    private String secondMethod ="/crm.company.get";
+    private String firstMethod = "/crm.company.list?select[]=ID&start=";
+    private String secondMethod ="/crm.company.get?id=";
     private String thirdMethod ="/user.get";
-    private ArrayList<request> requestObjects;
 
     public bitrixAPI()
     {
-       this.requestObjects = new ArrayList<>();
+       this.company_list = new ArrayList<>();
     }
 
     @Override
     protected ArrayList<String> call() throws Exception {
 
         if(!this.isCancelled()) {
-            JsonObject obj = (JsonObject) new JsonParser().parse(firstRequest());
-            JsonArray array = (JsonArray) obj.get("result");
-            for(JsonElement check : array)
-            {
-                System.out.println(check.toString() + "\n");
 
+            for(int i = 0; i<100; i++)
+            {
+                JsonObject obj = (JsonObject) new JsonParser().parse(firstRequest(iteration));
+                JsonArray array = (JsonArray) obj.get("result");
+                for(JsonElement el : array)
+                    System.out.println(el);
+                this.company_list.add(array);
+                this.iteration += 50;
+            }
+            System.out.println(this.company_list.size());
+            for(int i = 0; i<this.company_list.size(); i++)
+            {
+                for(JsonElement element : this.company_list.get(i))
+                {
+
+                    System.out.println(secondRequest(element.getAsInt()));
+                }
             }
             this.cancel();
         }
         return null;
     }
-    private String firstRequest()
+    private String firstRequest(int iteration)
     {
+        request requestObject = null;
         try {
-            requestObjects.add(new request(this.AUTH + this.firstMethod));
+            requestObject = new request(this.AUTH + firstMethod + iteration);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return requestObjects.get(0).getResult().toString();
+        return requestObject.getResult();
+    }
+    private String secondRequest(int companyId)
+    {
+        request requestObject = null;
+        try {
+            requestObject = new request(this.AUTH + secondMethod + companyId);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return requestObject.getResult();
     }
 }
