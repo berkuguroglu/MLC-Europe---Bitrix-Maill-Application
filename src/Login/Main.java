@@ -4,6 +4,9 @@ import Login.Bitrix.bitrixAPI;
 import Users.Users;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.concurrent.WorkerStateEvent;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -16,6 +19,7 @@ public class Main extends Application implements Login.Interfaces.LoginConnectio
 
 
     private Stage primaryStage;
+    private Login.Controller cont;
 
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -26,7 +30,7 @@ public class Main extends Application implements Login.Interfaces.LoginConnectio
 
         primaryStage.setScene(new Scene(root, primaryStage.getWidth(), primaryStage.getHeight()));
         primaryStage.setResizable(false);
-        Login.Controller cont = loader.getController();
+        cont = loader.getController();
         Platform.runLater(() -> {
             cont.setStage(this);
             primaryStage.show();
@@ -65,10 +69,24 @@ public class Main extends Application implements Login.Interfaces.LoginConnectio
         try {
             if(db_class.checkForUsers(username, pass))
             {
-                    //openSecondPage();
-                    Thread thread = new Thread(new bitrixAPI());
+                    bitrixAPI api = new bitrixAPI(this);
+                    Thread thread = new Thread(api);
                     thread.start();
-                    //this.primaryStage.close();
+                    Main.this.cont.label_info.toFront();
+                    Main.this.cont.info.setDisable(false);
+                    Main.this.cont.loginbutton.setDisable(true);
+                    Main.this.cont.USER_NAME.setDisable(true);
+                    Main.this.cont.USER_PASS.setDisable(true);
+                    api.setOnSucceeded(workerStateEvent -> {
+                        try {
+                            openSecondPage();
+                            Main.this.primaryStage.close();
+
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    });
+
 
             }
 
@@ -79,6 +97,15 @@ public class Main extends Application implements Login.Interfaces.LoginConnectio
         }
 
         return true;
+    }
+
+    @Override
+    public void progressBarUpdate(double prog, String status) {
+        Platform.runLater(() -> {
+            Main.this.cont.info.setProgress(prog);
+            Main.this.cont.label_info.setText(status);
+        });
+
     }
 
 }

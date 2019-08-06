@@ -6,9 +6,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 
@@ -20,13 +18,19 @@ public class Controller implements EventHandler<ActionEvent> {
     private LoginConnection connection;
 
     @FXML // fx:id="loginbutton"
-    private Button loginbutton; // Value injected by FXMLLoader
+    protected Button loginbutton; // Value injected by FXMLLoader
 
     @FXML
-    private TextField USER_NAME;
+    protected TextField USER_NAME;
 
     @FXML
-    private PasswordField USER_PASS;
+    protected PasswordField USER_PASS;
+
+    @FXML
+    protected ProgressIndicator info;
+
+    @FXML
+    protected Label label_info;
 
 
     public void setStage(Login.Main main)
@@ -40,6 +44,9 @@ public class Controller implements EventHandler<ActionEvent> {
     @FXML
     void initialize() {
           this.loginbutton.setOnAction(this);
+          this.info.setDisable(true);
+          this.label_info.toBack();
+
     }
 
 

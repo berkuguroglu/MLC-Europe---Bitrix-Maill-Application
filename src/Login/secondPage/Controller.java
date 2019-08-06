@@ -1,4 +1,4 @@
-package secondPage;
+package Login.secondPage;
 
 public class Controller {
 }
