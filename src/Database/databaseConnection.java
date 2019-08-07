@@ -2,12 +2,15 @@ package Database;
 
 
 import Users.Users;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
 public class databaseConnection {
@@ -54,6 +57,31 @@ public class databaseConnection {
         }
 
     }
+    public ArrayList<String[]> getSalesTeam() throws ExecutionException, InterruptedException, SQLException
+    {
+        Task st = new Task<ArrayList<String[]>>()
+        {
+            @Override
+            protected ArrayList<String[]> call() throws Exception {
+                ArrayList<String[]> lst = new ArrayList<>();
+
+                if(!this.isDone()) {
+                    String query = "SELECT * FROM EMPLOYEES_INFORMATION";
+                    rs = databaseConnection.this.st.executeQuery(query);
+                    while (rs.next()) {
+                       String[] str = {String.valueOf(rs.getInt("Bitrix_ID")), rs.getString("Name"), rs.getString("Password"), rs.getString("Email")};
+                       lst.add(str);
+                    }
+                }
+                this.done();
+                databaseConnection.this.con.close();
+                return lst;
+            }
+        };
+        new Thread(st).start();
+        return (ArrayList<String[]>) st.get();
+    }
+
     public boolean checkForUsers(String username, String pass) throws InterruptedException, ExecutionException {
 
         this.operation = true;

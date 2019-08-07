@@ -56,16 +56,16 @@ public class request
         Request response = webb.get(this.URL);
         Response<String> rest = response.asString();
         this.result = rest.getBody();
+        System.out.println(rest.getBody());
         return true;
 
     }
     public String getResult()
 
     {
-        System.out.println(this.result);
         if(this.result != null)
             return this.result;
-        else return "null";
+        else return null;
     }
 
 

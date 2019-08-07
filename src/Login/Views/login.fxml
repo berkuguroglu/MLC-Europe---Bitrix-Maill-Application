@@ -60,7 +60,7 @@
             <Font name="Fira Sans Heavy" size="27.0" />
          </font>
       </Label>
-      <ProgressIndicator fx:id="info" layoutX="169.0" layoutY="492.0" progress="0.0" />
+      <ProgressIndicator fx:id="info" layoutX="169.0" layoutY="492.0" />
       <Label fx:id="label_info" layoutX="90.0" layoutY="459.0" prefHeight="16.0" prefWidth="250.0" text="Label" textFill="WHITE">
          <font>
             <Font size="12.0" />

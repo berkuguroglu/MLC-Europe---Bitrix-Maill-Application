@@ -1,6 +1,7 @@
 package Login;
 
 import Login.Bitrix.bitrixAPI;
+import Login.secondPage.Company;
 import Users.Users;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -13,6 +14,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.concurrent.ExecutionException;
 
 public class Main extends Application implements Login.Interfaces.LoginConnection {
@@ -27,7 +29,6 @@ public class Main extends Application implements Login.Interfaces.LoginConnectio
         FXMLLoader loader= new FXMLLoader(getClass().getResource("Views/login.fxml"));
         Parent root = loader.load();
         primaryStage.setTitle("MLC Europe - Login Page");
-
         primaryStage.setScene(new Scene(root, primaryStage.getWidth(), primaryStage.getHeight()));
         primaryStage.setResizable(false);
         cont = loader.getController();
@@ -48,26 +49,28 @@ public class Main extends Application implements Login.Interfaces.LoginConnectio
 
 
     }
-    private void openSecondPage() throws IOException {
+    private void openSecondPage() throws IOException, InterruptedException, ExecutionException, SQLException {
       FXMLLoader secondPageLoader = new FXMLLoader(getClass().getResource("Views/secondpage.fxml"));
       Parent secondPage = secondPageLoader.load();
       Stage secondStage = new Stage();
       secondStage.setTitle("MLC Europe - CRM");
       secondStage.setResizable(false);
       secondStage.setScene(new Scene(secondPage, secondStage.getWidth(), secondStage.getHeight()));
-      secondStage.show();
+      ControllerSecond cont = secondPageLoader.getController();
+
 
         Platform.runLater(new Runnable() {
           @Override
           public void run() {
-
               try {
-                  Thread.sleep(15);
+                  cont.enableTable();
+                  Thread.sleep(3000);
+                  secondStage.show();
+
+
               } catch (InterruptedException e) {
                   e.printStackTrace();
               }
-              ControllerSecond cont = secondPageLoader.getController();
-              cont.enableTable();
 
           }
       });
@@ -98,6 +101,12 @@ public class Main extends Application implements Login.Interfaces.LoginConnectio
 
                         } catch (IOException e) {
                             e.printStackTrace();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        } catch (ExecutionException e) {
+                            e.printStackTrace();
+                        } catch (SQLException e) {
+                            e.printStackTrace();
                         }
                     });
 
@@ -108,6 +117,8 @@ public class Main extends Application implements Login.Interfaces.LoginConnectio
             e.printStackTrace();
         } catch (ExecutionException e) {
             e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
 
         return true;
@@ -116,7 +127,7 @@ public class Main extends Application implements Login.Interfaces.LoginConnectio
     @Override
     public void progressBarUpdate(double prog, String status) {
         Platform.runLater(() -> {
-            Main.this.cont.info.setProgress(prog);
+            //Main.this.cont.info.setProgress(prog);
             Main.this.cont.label_info.setText(status);
         });
 

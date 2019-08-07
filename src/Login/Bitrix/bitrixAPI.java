@@ -8,15 +8,20 @@ import javafx.concurrent.Task;
 import restRequest.request;
 
 import java.io.IOException;
+import java.sql.Array;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.concurrent.ExecutionException;
 
 public class bitrixAPI extends Task<ArrayList<String>> {
 
 
     private ArrayList<JsonArray> company_list;
     private ArrayList<JsonObject> company_details;
-    private final int limit = 2; // 1000 companies
-    private final int speed = 300; // dont change
+
+    private final int limit = 1; // 1000 companies
+    private final int speed = 300; // dont change !!!!!!!!!!!!!! IMPORTANT !!!!!!!! DONT REDUCE IT, IT BREAKS THE API.
     private Main stageHolder;
     private int iteration = 0;
     private final String AUTH = "https://mlcomponents.bitrix24.com/rest/12/b6pt3a9mlu6prvpl";
@@ -24,11 +29,12 @@ public class bitrixAPI extends Task<ArrayList<String>> {
     private String secondMethod ="/crm.company.get?id=";
     private String thirdMethod = "/user.get?id=";
 
-    public bitrixAPI(Main stageHolder)
-    {
+    public bitrixAPI(Main stageHolder) throws InterruptedException, ExecutionException, SQLException {
        this.company_list = new ArrayList<>();
        this.company_details = new ArrayList<>();
        this.stageHolder = stageHolder;
+
+
     }
 
     @Override
@@ -36,8 +42,11 @@ public class bitrixAPI extends Task<ArrayList<String>> {
 
         if(!this.isCancelled() && !this.isDone()) {
 
-            stageHolder.progressBarUpdate(0, "Checking company ID's ..");
 
+            stageHolder.progressBarUpdate(0, "Checking company ID's ..");
+            Database.databaseConnection db = new Database.databaseConnection();
+            db.openConnection();
+            ArrayList<String[]> data = db.getSalesTeam();
             for(int i = 0; i<limit; i++)
             {
                 JsonObject obj = (JsonObject) new JsonParser().parse(firstRequest(iteration));
@@ -51,14 +60,17 @@ public class bitrixAPI extends Task<ArrayList<String>> {
                 for(JsonElement element : this.company_list.get(i))
                 {
                     String result = secondRequest(element.getAsJsonObject().get("ID").getAsInt());
-                    JsonObject object = (JsonObject) new JsonParser().parse(result);
-                    this.company_details.add(object.get("result").getAsJsonObject());
-                    Company comp = new Company(object.get("result").getAsJsonObject().get("ID").
-                            getAsInt(), object.get("result").getAsJsonObject().get("TITLE").getAsString(), object.get("result").getAsJsonObject().get("ASSIGNED_BY_ID").getAsInt());
-                    Company.list.add(comp);
-                    Thread.sleep(speed);
+                    if(!result.equals(null)) {
+                        JsonObject object = (JsonObject) new JsonParser().parse(result);
+                            this.company_details.add(object.get("result").getAsJsonObject());
+                            new Company(object.get("result").getAsJsonObject().get("ID").
+                                    getAsInt(), object.get("result").getAsJsonObject().get("TITLE").getAsString(), object.get("result").getAsJsonObject().get("ASSIGNED_BY_ID").getAsInt(), data);
+                            Thread.sleep(speed);
+
+                    }
+                    else continue;
                 }
-                stageHolder.progressBarUpdate(Double.parseDouble(String.valueOf(i+1))/Double.parseDouble(String.valueOf(this.company_list.size())), "Fetching companies information ..");
+                stageHolder.progressBarUpdate(Double.parseDouble(String.valueOf(i+1))/Double.parseDouble(String.valueOf(this.company_list.size())), "Fetching companies information .." + Double.parseDouble(String.valueOf(i+1))/Double.parseDouble(String.valueOf(this.company_list.size() * 1).toString()));
             }
             this.succeeded();
         }
