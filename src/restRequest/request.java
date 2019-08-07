@@ -60,8 +60,12 @@ public class request
 
     }
     public String getResult()
+
     {
-        return this.result;
+        System.out.println(this.result);
+        if(this.result != null)
+            return this.result;
+        else return "null";
     }
 
 

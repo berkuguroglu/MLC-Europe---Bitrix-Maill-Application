@@ -52,11 +52,25 @@ public class Main extends Application implements Login.Interfaces.LoginConnectio
       FXMLLoader secondPageLoader = new FXMLLoader(getClass().getResource("Views/secondpage.fxml"));
       Parent secondPage = secondPageLoader.load();
       Stage secondStage = new Stage();
-      secondStage.setTitle("Main Page");
+      secondStage.setTitle("MLC Europe - CRM");
       secondStage.setResizable(false);
       secondStage.setScene(new Scene(secondPage, secondStage.getWidth(), secondStage.getHeight()));
       secondStage.show();
 
+        Platform.runLater(new Runnable() {
+          @Override
+          public void run() {
+
+              try {
+                  Thread.sleep(15);
+              } catch (InterruptedException e) {
+                  e.printStackTrace();
+              }
+              ControllerSecond cont = secondPageLoader.getController();
+              cont.enableTable();
+
+          }
+      });
 
 
     }
