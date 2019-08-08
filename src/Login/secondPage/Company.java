@@ -1,6 +1,8 @@
 package Login.secondPage;
 
 import Login.Bitrix.bitrixAPI;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import javafx.application.Platform;
@@ -18,18 +20,19 @@ public class Company
 
    private boolean state;
    public static ArrayList<Company> list = new ArrayList<Company>();
-   private ArrayList<SimpleStringProperty> mails;
+   private ArrayList<String> mails;
    private SimpleStringProperty ID;
    private static HashMap<String, String> country_codes = new HashMap<>();
    public SimpleStringProperty  companyName;
    private SimpleStringProperty responsiblePerson;
    private SimpleStringProperty country;
-   public Company(int ID, String company_name, int responsible_person, String phone_number, ArrayList<String[]> data) throws IOException {
+   private SimpleStringProperty email;
+   public Company(int ID, String company_name, int responsible_person, String phone_number, JsonArray email, ArrayList<String[]> data) throws IOException {
 
        this.ID = new SimpleStringProperty(String.valueOf(ID));
        this.companyName = new SimpleStringProperty(company_name);
        this.state = true;
-       mails = new ArrayList<>();
+       if(email != null) this.email = new SimpleStringProperty(email.get(0).getAsJsonObject().get("VALUE").getAsString());
        Platform.runLater(new Runnable() {
            @Override
            public void run() {
@@ -75,6 +78,10 @@ public class Company
    public void setCountry(String value)
    {
        this.country = new SimpleStringProperty(value);
+   }
+   public String getEmail()
+   {
+       return this.email.get();
    }
    public static void setCountries()
    {

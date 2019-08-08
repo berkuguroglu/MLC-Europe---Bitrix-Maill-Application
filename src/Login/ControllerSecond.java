@@ -97,6 +97,7 @@ public class ControllerSecond {
         resp.setCellValueFactory(new PropertyValueFactory<Company, String>("responsiblePerson"));
         company_id.setCellValueFactory(new PropertyValueFactory<Company, String>("ID"));
         country.setCellValueFactory(new PropertyValueFactory<Company, String>("country"));
+        email.setCellValueFactory(new PropertyValueFactory<Company, String>("email"));
 
         table.setItems(data);
         sent.setText("Mail sent: ");
@@ -105,7 +106,6 @@ public class ControllerSecond {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 if(mouseEvent.getClickCount() == 2 && table.getSelectionModel().getSelectedItem() != null)
-
                 System.out.println(table.getSelectionModel().getSelectedItem().getCompanyName());
             }
         });
