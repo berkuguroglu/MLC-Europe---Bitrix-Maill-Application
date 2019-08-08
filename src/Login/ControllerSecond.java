@@ -2,6 +2,7 @@ package Login;
 
 import Login.secondPage.Company;
 import Mail.Mail;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -94,9 +95,20 @@ public class ControllerSecond {
                     for(String[] strr : stry)
                     {
                         System.out.println(strr[0] + strr[1] + strr[2] + strr[3]);
-                        Mail obj = new Mail(strr[3], strr[2], "it4@mlceurope.com");
-                        obj.sendMail();
-                        Thread.sleep(300);
+                       Platform.runLater(new Runnable() {
+                           @Override
+                           public void run() {
+                               Mail obj = new Mail(strr[3], strr[2], "it4@mlceurope.com");
+                               try {
+                                   obj.sendMail();
+                               } catch (Exception e) {
+                                   e.printStackTrace();
+                               }
+                           }
+                       });
+
+
+
                     }
 
                 } catch (ExecutionException e) {
