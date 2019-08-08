@@ -20,9 +20,12 @@ public class Company
    public static ArrayList<Company> list = new ArrayList<Company>();
    private ArrayList<SimpleStringProperty> mails;
    private SimpleStringProperty ID;
+   private static HashMap<String, String> country_codes = new HashMap<>();
    public SimpleStringProperty  companyName;
    private SimpleStringProperty responsiblePerson;
-   public Company(int ID, String company_name, int responsible_person, ArrayList<String[]> data) throws IOException {
+   private SimpleStringProperty country;
+   public Company(int ID, String company_name, int responsible_person, String phone_number, ArrayList<String[]> data) throws IOException {
+
        this.ID = new SimpleStringProperty(String.valueOf(ID));
        this.companyName = new SimpleStringProperty(company_name);
        this.state = true;
@@ -40,10 +43,22 @@ public class Company
                }
            }
        });
+       Platform.runLater(new Runnable() {
+           @Override
+           public void run() {
+               String[] result = phone_number.split(" ", 2);
+               System.out.println(result[0]);
+               setCountry(country_codes.getOrDefault(result[0], "Unknown"));
+           }
+       });
    }
    public String getCompanyName()
    {
        return this.companyName.get();
+   }
+   public String getCountry()
+   {
+       return this.country.get();
    }
    public String getID()
    {
@@ -56,6 +71,25 @@ public class Company
    public void setResponsiblePerson(String value)
    {
        this.responsiblePerson = new SimpleStringProperty(value);
+   }
+   public void setCountry(String value)
+   {
+       this.country = new SimpleStringProperty(value);
+   }
+   public static void setCountries()
+   {
+       country_codes.put("+90", "Turkey");
+       country_codes.put("+91", "India");
+       country_codes.put("+49", "Germany");
+       country_codes.put("+33", "France");
+       country_codes.put("+30", "Greece");
+       country_codes.put("+1", "USA or Canada");
+       country_codes.put("+1", "Bulgaria");
+       country_codes.put("+46", "Sweden");
+       country_codes.put("+31", "Netherlands");
+       country_codes.put("+44", "United Kingdom");
+       country_codes.put("+43", "Austria");
+
    }
 
 

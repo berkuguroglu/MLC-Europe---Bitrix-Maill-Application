@@ -39,9 +39,6 @@ public class ControllerSecond {
     private TableColumn<Company, String> company_name;
 
     @FXML
-    private TableColumn<Company, String>company_type;
-
-    @FXML
     private TableColumn<Company, String> country;
 
     @FXML
@@ -80,7 +77,6 @@ public class ControllerSecond {
         columns.add(company_name);
         columns.add(company_id);
         columns.add(resp);
-        columns.add(company_type);
         columns.add(email);
         columns.add(country);
         columns.add(templates);
@@ -100,13 +96,16 @@ public class ControllerSecond {
         company_name.setCellValueFactory(new PropertyValueFactory<Company, String>("companyName"));
         resp.setCellValueFactory(new PropertyValueFactory<Company, String>("responsiblePerson"));
         company_id.setCellValueFactory(new PropertyValueFactory<Company, String>("ID"));
+        country.setCellValueFactory(new PropertyValueFactory<Company, String>("country"));
+
         table.setItems(data);
         sent.setText("Mail sent: ");
         count.setText("Companies processing: " + Company.list.size());
         table.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                if(mouseEvent.getClickCount() == 2)
+                if(mouseEvent.getClickCount() == 2 && table.getSelectionModel().getSelectedItem() != null)
+
                 System.out.println(table.getSelectionModel().getSelectedItem().getCompanyName());
             }
         });

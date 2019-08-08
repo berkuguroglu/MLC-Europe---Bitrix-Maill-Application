@@ -20,7 +20,7 @@ public class bitrixAPI extends Task<ArrayList<String>> {
     private ArrayList<JsonArray> company_list;
     private ArrayList<JsonObject> company_details;
 
-    private final int limit = 1; // 1000 companies
+    private final int limit = 3; // 1000 companies
     private final int speed = 300; // dont change !!!!!!!!!!!!!! IMPORTANT !!!!!!!! DONT REDUCE IT, IT BREAKS THE API.
     private Main stageHolder;
     private int iteration = 0;
@@ -46,6 +46,7 @@ public class bitrixAPI extends Task<ArrayList<String>> {
             stageHolder.progressBarUpdate(0, "Checking company ID's ..");
             Database.databaseConnection db = new Database.databaseConnection();
             db.openConnection();
+            Company.setCountries();
             ArrayList<String[]> data = db.getSalesTeam();
             for(int i = 0; i<limit; i++)
             {
@@ -64,7 +65,7 @@ public class bitrixAPI extends Task<ArrayList<String>> {
                         JsonObject object = (JsonObject) new JsonParser().parse(result);
                             this.company_details.add(object.get("result").getAsJsonObject());
                             new Company(object.get("result").getAsJsonObject().get("ID").
-                                    getAsInt(), object.get("result").getAsJsonObject().get("TITLE").getAsString(), object.get("result").getAsJsonObject().get("ASSIGNED_BY_ID").getAsInt(), data);
+                                    getAsInt(), object.get("result").getAsJsonObject().get("TITLE").getAsString(), object.get("result").getAsJsonObject().get("ASSIGNED_BY_ID").getAsInt(), object.get("result").getAsJsonObject().get("PHONE").getAsJsonArray().get(0).getAsJsonObject().get("VALUE").getAsString(), data);
                             Thread.sleep(speed);
 
                     }

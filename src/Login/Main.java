@@ -33,7 +33,7 @@ public class Main extends Application implements Login.Interfaces.LoginConnectio
         primaryStage.setResizable(false);
         cont = loader.getController();
         Platform.runLater(() -> {
-            cont.setStage(this);
+            cont.setStage(Main.this);
             primaryStage.show();
 
         });
@@ -57,6 +57,7 @@ public class Main extends Application implements Login.Interfaces.LoginConnectio
       secondStage.setResizable(false);
       secondStage.setScene(new Scene(secondPage, secondStage.getWidth(), secondStage.getHeight()));
       ControllerSecond cont = secondPageLoader.getController();
+
 
 
         Platform.runLater(new Runnable() {
