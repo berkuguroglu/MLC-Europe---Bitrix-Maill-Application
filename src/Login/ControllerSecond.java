@@ -1,21 +1,21 @@
 package Login;
 
 import Login.secondPage.Company;
+import Mail.Mail;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableRow;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.util.Callback;
 
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
+import java.util.concurrent.ExecutionException;
 
 public class ControllerSecond {
 
@@ -43,6 +43,9 @@ public class ControllerSecond {
 
     @FXML
     private TableColumn<Company, String> email;
+
+    @FXML
+    private Button process;
 
     @FXML
     private TableColumn<Company, String> templates;
@@ -80,6 +83,33 @@ public class ControllerSecond {
         columns.add(email);
         columns.add(country);
         columns.add(templates);
+        process.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                Database.databaseConnection db = new Database.databaseConnection();
+                db.openConnection();
+                try {
+                    ArrayList<String[]> stry = db.getSalesTeam();
+
+                    for(String[] strr : stry)
+                    {
+                        System.out.println(strr[0] + strr[1] + strr[2] + strr[3]);
+                        Mail obj = new Mail(strr[3], strr[2], "it4@mlceurope.com");
+                        obj.sendMail();
+                        Thread.sleep(300);
+                    }
+
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
 
     }
 
