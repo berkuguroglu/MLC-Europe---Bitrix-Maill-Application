@@ -64,8 +64,12 @@ public class bitrixAPI extends Task<ArrayList<String>> {
                     if(!result.equals(null)) {
                         JsonObject object = (JsonObject) new JsonParser().parse(result);
                             this.company_details.add(object.get("result").getAsJsonObject());
+                            String phone_number = "00";
+                        if(object.get("result").getAsJsonObject().has("PHONE")) {
+                                phone_number = object.get("result").getAsJsonObject().get("PHONE").getAsJsonArray().get(0).getAsJsonObject().get("VALUE").getAsString();
+                            }
                             new Company(object.get("result").getAsJsonObject().get("ID").
-                                    getAsInt(), object.get("result").getAsJsonObject().get("TITLE").getAsString(), object.get("result").getAsJsonObject().get("ASSIGNED_BY_ID").getAsInt(), object.get("result").getAsJsonObject().get("PHONE").getAsJsonArray().get(0).getAsJsonObject().get("VALUE").getAsString(), data);
+                                    getAsInt(), object.get("result").getAsJsonObject().get("TITLE").getAsString(), object.get("result").getAsJsonObject().get("ASSIGNED_BY_ID").getAsInt(), phone_number, data);
                             Thread.sleep(speed);
 
                     }
