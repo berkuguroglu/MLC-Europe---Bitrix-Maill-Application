@@ -1,13 +1,9 @@
 package Login;
 
 import Login.Bitrix.bitrixAPI;
-import Login.secondPage.Company;
-import Users.Users;
+import Login.secondPage.ControllerSecond;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.concurrent.WorkerStateEvent;
-import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;

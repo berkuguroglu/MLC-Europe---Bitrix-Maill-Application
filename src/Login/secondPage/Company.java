@@ -50,7 +50,6 @@ public class Company
            @Override
            public void run() {
                String[] result = phone_number.split(" ", 2);
-               System.out.println(result[0]);
                setCountry(country_codes.getOrDefault(result[0], "Unknown"));
            }
        });

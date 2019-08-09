@@ -1,10 +1,12 @@
-package Login;
+package Login.secondPage;
 
+import Database.databaseConnection;
 import Login.secondPage.Company;
 import Mail.Mail;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -18,7 +20,7 @@ import java.util.ArrayList;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutionException;
 
-public class ControllerSecond {
+public class ControllerSecond implements EventHandler<MouseEvent> {
 
     private ArrayList<TableColumn<Company, String>> columns;
 
@@ -84,44 +86,7 @@ public class ControllerSecond {
         columns.add(email);
         columns.add(country);
         columns.add(templates);
-        process.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                Database.databaseConnection db = new Database.databaseConnection();
-                db.openConnection();
-                try {
-                    ArrayList<String[]> stry = db.getSalesTeam();
-
-                    for(String[] strr : stry)
-                    {
-                        System.out.println(strr[0] + strr[1] + strr[2] + strr[3]);
-                       Platform.runLater(new Runnable() {
-                           @Override
-                           public void run() {
-                               Mail obj = new Mail(strr[3], strr[2], "it4@mlceurope.com");
-                               try {
-                                   obj.sendMail();
-                               } catch (Exception e) {
-                                   e.printStackTrace();
-                               }
-                           }
-                       });
-
-
-
-                    }
-
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
+        process.setOnMouseClicked(this);
 
     }
 
@@ -129,6 +94,8 @@ public class ControllerSecond {
     {
 
         ObservableList<Company> data = FXCollections.observableList(Company.list);
+        for(int t = 0; t<data.size(); t++)
+        System.out.println(data.get(t).getCompanyName());
         for(TableColumn<Company, String> el : columns)
         {
             el.setResizable(false);
@@ -144,12 +111,46 @@ public class ControllerSecond {
         table.setItems(data);
         sent.setText("Mail sent: ");
         count.setText("Companies processing: " + Company.list.size());
-        table.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                if(mouseEvent.getClickCount() == 2 && table.getSelectionModel().getSelectedItem() != null)
-                System.out.println(table.getSelectionModel().getSelectedItem().getCompanyName());
-            }
+        table.setOnMouseClicked(mouseEvent -> {
+            if(mouseEvent.getClickCount() == 2 && table.getSelectionModel().getSelectedItem() != null)
+            System.out.println(table.getSelectionModel().getSelectedItem().getCompanyName());
         });
+    }
+
+
+
+    @Override
+    public void handle(MouseEvent mouseEvent)
+    {
+        databaseConnection db = new Database.databaseConnection();
+        db.openConnection();
+        Mail.Templates.putMap();
+        ArrayList<String[]> stry = new ArrayList<>();
+        try {
+            stry = db.getSalesTeam();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        for(String[] strr : stry)
+        {
+            System.out.println(strr[0] + strr[1] + strr[2] + strr[3]);
+            Mail obj = null;
+            try {
+                obj = new Mail(strr[3], strr[2], "berk.ugo@gmail.com", "English");
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            new Thread(obj).start();
+
+        }
     }
 }

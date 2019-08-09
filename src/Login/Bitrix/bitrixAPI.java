@@ -69,7 +69,6 @@ public class bitrixAPI extends Task<ArrayList<String>> {
                             if(object.get("result").getAsJsonObject().has("PHONE") && object.get("result").getAsJsonObject().has("EMAIL")) {
                                 phone_number = object.get("result").getAsJsonObject().get("PHONE").getAsJsonArray().get(0).getAsJsonObject().get("VALUE").getAsString();
                                 emails = object.get("result").getAsJsonObject().get("EMAIL").getAsJsonArray();
-                                System.out.println("saf");
                             }
                             new Company(object.get("result").getAsJsonObject().get("ID").
                                     getAsInt(), object.get("result").getAsJsonObject().get("TITLE").getAsString(), object.get("result").getAsJsonObject().get("ASSIGNED_BY_ID").getAsInt(), phone_number, emails, data);

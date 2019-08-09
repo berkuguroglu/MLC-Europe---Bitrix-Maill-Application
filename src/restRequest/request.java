@@ -56,7 +56,6 @@ public class request
         Request response = webb.get(this.URL);
         Response<String> rest = response.asString();
         this.result = rest.getBody();
-        System.out.println(rest.getBody());
         return true;
 
     }
