@@ -1,6 +1,7 @@
 package Login.secondPage;
 
 import Database.databaseConnection;
+import Login.Bitrix.fetchAPI;
 import Login.secondPage.Company;
 import Mail.Mail;
 import javafx.application.Platform;
@@ -88,7 +89,27 @@ public class ControllerSecond implements EventHandler<MouseEvent> {
 
     private void bitrix(MouseEvent mouseEvent) {
 
-               System.out.println("10304");
+        try {
+            this.table.setDisable(true);
+            fetchAPI fetch = new fetchAPI(Integer.parseInt(this.bitrixfield.getText()));
+            new Thread(fetch).start();
+            fetch.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+                @Override
+                public void handle(WorkerStateEvent workerStateEvent) {
+                    table.setDisable(false);
+                    table.refresh();
+                    enableTable();
+                }
+            });
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        this.enableTable();
+               table.refresh();
     }
 
     public void enableTable()
@@ -151,6 +172,12 @@ public class ControllerSecond implements EventHandler<MouseEvent> {
 
                     data.get(finalT).setStatus("Sending..");
                     table.refresh();
+                });
+                obj.setOnFailed(workerStateEvent -> {
+
+                    data.get(finalT).setStatus("Failed");
+                    table.refresh();
+
                 });
             } catch (InterruptedException e) {
                 e.printStackTrace();

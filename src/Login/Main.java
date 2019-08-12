@@ -94,6 +94,9 @@ public class Main extends Application implements Login.Interfaces.LoginConnectio
                     Main.this.cont.USER_PASS.setDisable(true);
                     api.setOnSucceeded(workerStateEvent -> {
                         try {
+                            Database.databaseConnection db_two = new Database.databaseConnection();
+                            db_two.openConnection();
+                            db_two.setIteration(api.get());
                             openSecondPage();
                             Main.this.primaryStage.close();
 

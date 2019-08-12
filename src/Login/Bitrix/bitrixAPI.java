@@ -8,13 +8,11 @@ import javafx.concurrent.Task;
 import restRequest.request;
 
 import java.io.IOException;
-import java.sql.Array;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 
-public class bitrixAPI extends Task<ArrayList<String>> {
+public class bitrixAPI extends Task<Integer> {
 
 
     private ArrayList<JsonArray> company_list;
@@ -38,7 +36,7 @@ public class bitrixAPI extends Task<ArrayList<String>> {
     }
 
     @Override
-    protected ArrayList<String> call() throws Exception {
+    protected Integer call() throws Exception {
 
         if(!this.isCancelled() && !this.isDone()) {
 
@@ -55,33 +53,31 @@ public class bitrixAPI extends Task<ArrayList<String>> {
                 this.company_list.add(array);
                 this.iteration += 50;
             }
-            for(int i = 0; i<this.company_list.size(); i++)
-            {
+            for(int i = 0; i<this.company_list.size(); i++) {
 
-                for(JsonElement element : this.company_list.get(i))
-                {
+                for (JsonElement element : this.company_list.get(i)) {
                     String result = secondRequest(element.getAsJsonObject().get("ID").getAsInt());
-                    if(!result.equals(null)) {
+                    if (!result.equals(null)) {
                         JsonObject object = (JsonObject) new JsonParser().parse(result);
-                            this.company_details.add(object.get("result").getAsJsonObject());
-                            String phone_number = "00";
-                            JsonArray  emails = null;
-                            if(object.get("result").getAsJsonObject().has("PHONE") && object.get("result").getAsJsonObject().has("EMAIL")) {
-                                phone_number = object.get("result").getAsJsonObject().get("PHONE").getAsJsonArray().get(0).getAsJsonObject().get("VALUE").getAsString();
-                                emails = object.get("result").getAsJsonObject().get("EMAIL").getAsJsonArray();
-                            }
-                            new Company(object.get("result").getAsJsonObject().get("ID").
-                                    getAsInt(), object.get("result").getAsJsonObject().get("TITLE").getAsString(), object.get("result").getAsJsonObject().get("ASSIGNED_BY_ID").getAsInt(), phone_number, emails, data, "Presale", "Waiting");
-                            Thread.sleep(speed);
+                        this.company_details.add(object.get("result").getAsJsonObject());
+                        String phone_number = "00";
+                        JsonArray emails = null;
+                        if (object.get("result").getAsJsonObject().has("PHONE") && object.get("result").getAsJsonObject().has("EMAIL")) {
+                            phone_number = object.get("result").getAsJsonObject().get("PHONE").getAsJsonArray().get(0).getAsJsonObject().get("VALUE").getAsString();
+                            emails = object.get("result").getAsJsonObject().get("EMAIL").getAsJsonArray();
+                        }
+                        new Company(object.get("result").getAsJsonObject().get("ID").
+                                getAsInt(), object.get("result").getAsJsonObject().get("TITLE").getAsString(), object.get("result").getAsJsonObject().get("ASSIGNED_BY_ID").getAsInt(), phone_number, emails, data, "Presale", "Waiting");
+                        Thread.sleep(speed);
 
-                    }
-                    else continue;
+                    } else continue;
                 }
-                stageHolder.progressBarUpdate(Double.parseDouble(String.valueOf(i+1))/Double.parseDouble(String.valueOf(this.company_list.size())), "Fetching companies information .." + Double.parseDouble(String.valueOf(i+1))/Double.parseDouble(String.valueOf(this.company_list.size() * 1).toString()));
+                stageHolder.progressBarUpdate(Double.parseDouble(String.valueOf(i + 1)) / Double.parseDouble(String.valueOf(this.company_list.size())), "Fetching companies information .." + Double.parseDouble(String.valueOf(i + 1)) / Double.parseDouble(String.valueOf(this.company_list.size() * 1).toString()));
             }
+
             this.succeeded();
         }
-        return null;
+        return this.iteration;
     }
     private String firstRequest(int iteration)
     {

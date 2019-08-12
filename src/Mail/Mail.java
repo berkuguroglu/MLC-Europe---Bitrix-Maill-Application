@@ -10,6 +10,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import java.io.File;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.*;
@@ -77,15 +78,30 @@ public class Mail extends Task<Void> {
             message.setFrom(new InternetAddress(myAccountEmail));
             message.setRecipient(Message.RecipientType.TO, new InternetAddress(recepient));
             message.setSubject("MLC Europe");
+
             Multipart multipart = new MimeMultipart();
-            String filename = "src/Mail/MLC Europe GmbH CATALOGUE.pdf";
+
+            String filename = getClass().getResource("MLC_Europe_GmbH_Catalog.pdf").getPath();
+            String filetwo = getClass().getResource("MLC_Europe_GmbH_Line_Card.pdf").getPath();
             DataSource source =  new FileDataSource(filename);
+
+            BodyPart content = new MimeBodyPart();
+            content.setText(produceMessage(this.salesname, country, recepient, this.myAccountEmail));
+
             BodyPart messageBodyPart = new MimeBodyPart();
             messageBodyPart.setDataHandler(new DataHandler(source));
             messageBodyPart.setFileName(filename);
             multipart.addBodyPart(messageBodyPart);
+            BodyPart secondBodyPart = new MimeBodyPart();
+            multipart.addBodyPart(content);
+
+
+            source = new FileDataSource(filetwo);
+            secondBodyPart.setDataHandler(new DataHandler(source));
+            secondBodyPart.setFileName(filetwo);
+            multipart.addBodyPart(secondBodyPart);
+
             message.setContent(multipart);
-            message.setText(produceMessage(this.salesname, country, recepient, this.myAccountEmail));
             return message;
         }catch (Exception ex){
             System.out.println(ex);
@@ -113,9 +129,16 @@ public class Mail extends Task<Void> {
             Thread.sleep(r.nextInt(10000));
             System.out.println("Preparing to send email");
             System.out.println(myAccountEmail + " " + recepient);
-            Message message = this.prepareMessage(session, myAccountEmail, "it4@mlceurope.com", country);
-            Transport.send(message);
-            System.out.println("Message sent succesfully");
+            try {
+                Message m = this.prepareMessage(session, myAccountEmail, "it31@mlceurope.com", country);
+                System.out.println("Message sent succesfully");
+                Transport.send(m);
+            }
+            catch (Exception ex)
+            {
+                System.out.println(ex);
+            }
+
             this.succeeded();
 
         }

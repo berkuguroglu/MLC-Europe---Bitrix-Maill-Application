@@ -2,8 +2,6 @@ package Database;
 
 
 import Users.Users;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.control.Alert;
@@ -81,7 +79,58 @@ public class databaseConnection {
         new Thread(st).start();
         return (ArrayList<String[]>) st.get();
     }
+    public int getIteration() throws ExecutionException, InterruptedException, SQLException
+    {
+        Task st = new Task<Integer>()
+        {
+            @Override
+            protected Integer call() throws Exception {
+                int iter = 0;
 
+                if(!this.isDone()) {
+                    String query = "SELECT Iteration FROM GENERAL_INFO";
+                    rs = databaseConnection.this.st.executeQuery(query);
+                    while (rs.next()) {
+                        iter = rs.getInt("Iteration");
+                    }
+                    this.done();
+                    return iter;
+                }
+                databaseConnection.this.con.close();
+                this.done();
+                return iter;
+            }
+        };
+        new Thread(st).start();
+        return (int) st.get();
+    }
+    public boolean setIteration(final int iter) throws ExecutionException, InterruptedException, SQLException
+    {
+        Task st = new Task<Boolean>()
+        {
+            @Override
+            protected Boolean call() throws Exception {
+
+                if(!this.isDone()) {
+                    try {
+
+                        String query = "UPDATE GENERAL_INFO SET Iteration=" + iter;
+                        databaseConnection.this.st.execute(query);
+                    }
+                    catch (SQLException ex)
+                    {
+                        System.out.println(ex);
+                    }
+
+                }
+                databaseConnection.this.con.close();
+                this.done();
+                return true;
+            }
+        };
+        new Thread(st).start();
+        return (boolean) st.get();
+    }
     public boolean checkForUsers(String username, String pass) throws InterruptedException, ExecutionException {
 
         this.operation = true;
