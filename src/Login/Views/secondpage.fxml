@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Tab?>
@@ -17,7 +16,7 @@
    <children>
       <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
       <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
-      <TextField layoutX="545.0" layoutY="107.0" prefHeight="25.0" prefWidth="363.0" promptText="Search" />
+      <TextField layoutX="628.0" layoutY="110.0" prefHeight="25.0" prefWidth="363.0" promptText="Search" />
       <Button layoutX="1228.0" layoutY="100.0" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="30.0" prefWidth="96.0" style="-fx-background-color: #ff6961;" text="REFRESH" textFill="WHITE">
          <font>
             <Font name="Ebrima Bold" size="13.0" />
@@ -25,7 +24,7 @@
       </Button>
       <TabPane layoutX="40.0" layoutY="153.0" prefHeight="573.0" prefWidth="1319.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 3; -fx-border-color: #111111;" tabClosingPolicy="UNAVAILABLE">
         <tabs>
-          <Tab text="Pre-Sales">
+          <Tab text="Companies">
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="543.0" prefWidth="1302.0">
                      <children>
@@ -39,7 +38,8 @@
                                     <TableColumn fx:id="email" prefWidth="171.0" text="E-Mails" />
                                     <TableColumn fx:id="resp" prefWidth="219.0" text="Responsible Person" />
                                   <TableColumn fx:id="templates" prefWidth="121.0" text="Templates" />
-                                    <TableColumn fx:id="templates2" prefWidth="121.0" text="Status" />
+                                    <TableColumn fx:id="sale" prefWidth="121.0" text="State" />
+                                    <TableColumn fx:id="status" prefWidth="121.0" text="Status" />
                                 </columns>
                                  <columnResizePolicy>
                                     <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
@@ -51,42 +51,15 @@
                   </AnchorPane>
             </content>
           </Tab>
-          <Tab text="Sales">
-            <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                     <children>
-                        <HBox alignment="CENTER" prefHeight="539.0" prefWidth="1319.0">
-                           <children>
-                              <TableView fx:id="table1" prefHeight="539.0" prefWidth="1324.0">
-                                 <columns>
-                                    <TableColumn fx:id="company_name1" prefWidth="206.0" text="Company Name" />
-                                    <TableColumn fx:id="company_type1" minWidth="0.0" prefWidth="206.0" text="Company Type" />
-                                    <TableColumn fx:id="country1" prefWidth="206.0" text="Country" />
-                                    <TableColumn prefWidth="171.0" text="E-mail" />
-                                    <TableColumn fx:id="email1" prefWidth="206.0" text="Responsible Person" />
-                                    <TableColumn fx:id="templates1" prefWidth="206.0" text="Templates" />
-                                 </columns>
-                                 <columnResizePolicy>
-                                     <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-                                 </columnResizePolicy>
-                                 <HBox.margin>
-                                    <Insets />
-                                 </HBox.margin>
-                              </TableView>
-                           </children>
-                        </HBox>
-                     </children>
-                  </AnchorPane>
-            </content>
-          </Tab>
         </tabs>
       </TabPane>
-      <Label fx:id="count" layoutX="946.0" layoutY="107.0" text="Label" />
-      <Label fx:id="sent" layoutX="946.0" layoutY="127.0" text="Label" />
+      <Label fx:id="count" layoutX="1149.0" layoutY="75.0" text="Label" />
       <Button fx:id="process" layoutX="40.0" layoutY="100.0" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="30.0" prefWidth="170.0" style="-fx-background-color: #ff6961;" text="START THE PROCESS" textFill="WHITE">
          <font>
             <Font name="Ebrima Bold" size="13.0" />
          </font>
       </Button>
+      <TextField fx:id="bitrixfield" layoutX="331.0" layoutY="110.0" promptText="Amount.." />
+      <Button fx:id="bitrixbutton" layoutX="510.0" layoutY="110.0" mnemonicParsing="false" text="BITRIX" textAlignment="CENTER" textFill="#090c32" />
    </children>
 </AnchorPane>

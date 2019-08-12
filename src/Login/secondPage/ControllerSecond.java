@@ -6,6 +6,7 @@ import Mail.Mail;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.WorkerStateEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -53,31 +54,23 @@ public class ControllerSecond implements EventHandler<MouseEvent> {
     @FXML
     private TableColumn<Company, String> templates;
 
-    @FXML
-    private TableView<?> table1;
-
-    @FXML
-    private TableColumn<?, ?> company_name1;
-
-    @FXML
-    private TableColumn<?, ?> company_type1;
-
-    @FXML
-    private TableColumn<?, ?> country1;
-
-    @FXML
-    private TableColumn<?, ?> email1;
 
     @FXML
     private TableColumn<Company, String> resp;
 
     @FXML
-    private TableColumn<?, ?> templates1;
+    private TableColumn<Company, String> sale;
+
+    @FXML
+    private TableColumn<Company, String> status;
+
+    @FXML private Button bitrixbutton;
+    @FXML private TextField bitrixfield;
+
 
     @FXML
     void initialize() {
 
-        this.table.refresh();
         this.columns = new ArrayList<>();
         table.setEditable(false);
         columns.add(company_name);
@@ -86,16 +79,22 @@ public class ControllerSecond implements EventHandler<MouseEvent> {
         columns.add(email);
         columns.add(country);
         columns.add(templates);
+        columns.add(status);
+        columns.add(sale);
         process.setOnMouseClicked(this);
+        bitrixbutton.setOnMouseClicked(this::bitrix);
 
+    }
+
+    private void bitrix(MouseEvent mouseEvent) {
+
+               System.out.println("10304");
     }
 
     public void enableTable()
     {
 
         ObservableList<Company> data = FXCollections.observableList(Company.list);
-        for(int t = 0; t<data.size(); t++)
-        System.out.println(data.get(t).getCompanyName());
         for(TableColumn<Company, String> el : columns)
         {
             el.setResizable(false);
@@ -107,9 +106,11 @@ public class ControllerSecond implements EventHandler<MouseEvent> {
         company_id.setCellValueFactory(new PropertyValueFactory<Company, String>("ID"));
         country.setCellValueFactory(new PropertyValueFactory<Company, String>("country"));
         email.setCellValueFactory(new PropertyValueFactory<Company, String>("email"));
+        sale.setCellValueFactory(new PropertyValueFactory<Company, String>("stater"));
+        status.setCellValueFactory(new PropertyValueFactory<Company, String>("status"));
+
 
         table.setItems(data);
-        sent.setText("Mail sent: ");
         count.setText("Companies processing: " + Company.list.size());
         table.setOnMouseClicked(mouseEvent -> {
             if(mouseEvent.getClickCount() == 2 && table.getSelectionModel().getSelectedItem() != null)
@@ -118,30 +119,39 @@ public class ControllerSecond implements EventHandler<MouseEvent> {
     }
 
 
-
     @Override
     public void handle(MouseEvent mouseEvent)
     {
-        databaseConnection db = new Database.databaseConnection();
-        db.openConnection();
-        Mail.Templates.putMap();
-        ArrayList<String[]> stry = new ArrayList<>();
         try {
-            stry = db.getSalesTeam();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
+            Mail.Templates.putTeam();
         } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        ObservableList<Company> data = FXCollections.observableList(Company.list);
+        this.process.setDisable(true);
+        for(int t = 0; t<data.size(); t++) {
 
-        for(String[] strr : stry)
-        {
-            System.out.println(strr[0] + strr[1] + strr[2] + strr[3]);
-            Mail obj = null;
             try {
-                obj = new Mail(strr[3], strr[2], "berk.ugo@gmail.com", "English");
+                Mail obj = new Mail(data.get(t).getRespPersonID(), data.get(t).getEmail(), "English");
+                new Thread(obj).start();
+                int finalT = t;
+                obj.setOnSucceeded(workerStateEvent -> {
+                     // sent.setText(String.valueOf(Integer.parseInt(sent.getText().trim().split(":", 2)[1]) + 1));
+                    data.get(finalT).setStatus("Sent");
+                    table.refresh();
+                    System.out.println(finalT + " " + data.size());
+                    if(finalT == data.size() -1)
+                        ControllerSecond.this.table.setDisable(false);
+                });
+                obj.setOnRunning(workerStateEvent -> {
+
+                    data.get(finalT).setStatus("Sending..");
+                    table.refresh();
+                });
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } catch (ExecutionException e) {
@@ -149,8 +159,12 @@ public class ControllerSecond implements EventHandler<MouseEvent> {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-            new Thread(obj).start();
+
+
 
         }
+
+
     }
+
 }

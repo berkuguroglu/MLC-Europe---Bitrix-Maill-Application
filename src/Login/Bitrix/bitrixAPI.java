@@ -71,7 +71,7 @@ public class bitrixAPI extends Task<ArrayList<String>> {
                                 emails = object.get("result").getAsJsonObject().get("EMAIL").getAsJsonArray();
                             }
                             new Company(object.get("result").getAsJsonObject().get("ID").
-                                    getAsInt(), object.get("result").getAsJsonObject().get("TITLE").getAsString(), object.get("result").getAsJsonObject().get("ASSIGNED_BY_ID").getAsInt(), phone_number, emails, data);
+                                    getAsInt(), object.get("result").getAsJsonObject().get("TITLE").getAsString(), object.get("result").getAsJsonObject().get("ASSIGNED_BY_ID").getAsInt(), phone_number, emails, data, "Presale", "Waiting");
                             Thread.sleep(speed);
 
                     }

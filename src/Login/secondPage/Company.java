@@ -27,11 +27,18 @@ public class Company
    private SimpleStringProperty responsiblePerson;
    private SimpleStringProperty country;
    private SimpleStringProperty email;
-   public Company(int ID, String company_name, int responsible_person, String phone_number, JsonArray email, ArrayList<String[]> data) throws IOException {
+   private SimpleStringProperty stater;
+   private SimpleStringProperty status;
+   private int respPersonID;
+   public Company(int ID, String company_name, int responsible_person, String phone_number, JsonArray email, ArrayList<String[]> data, String state, String status) throws IOException {
 
        this.ID = new SimpleStringProperty(String.valueOf(ID));
        this.companyName = new SimpleStringProperty(company_name);
        this.state = true;
+       this.respPersonID = responsible_person;
+       this.status = new SimpleStringProperty(status);
+       this.stater = new SimpleStringProperty(state);
+
        if(email != null) this.email = new SimpleStringProperty(email.get(0).getAsJsonObject().get("VALUE").getAsString());
        Platform.runLater(new Runnable() {
            @Override
@@ -58,6 +65,9 @@ public class Company
    {
        return this.companyName.get();
    }
+   public String getStatus() {return this.status.get(); }
+   public String getStater() {return this.stater.get(); }
+   public void setStatus(String s) {this.status.set(s);}
    public String getCountry()
    {
        return this.country.get();
@@ -82,6 +92,7 @@ public class Company
    {
        return this.email.get();
    }
+   public int getRespPersonID() {return this.respPersonID; }
    public static void setCountries()
    {
        country_codes.put("+90", "Turkey");

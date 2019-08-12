@@ -53,6 +53,8 @@ public class Main extends Application implements Login.Interfaces.LoginConnectio
       secondStage.setResizable(false);
       secondStage.setScene(new Scene(secondPage, secondStage.getWidth(), secondStage.getHeight()));
       ControllerSecond cont = secondPageLoader.getController();
+        cont.enableTable();
+
 
 
 
@@ -60,7 +62,6 @@ public class Main extends Application implements Login.Interfaces.LoginConnectio
           @Override
           public void run() {
               try {
-                  cont.enableTable();
                   Thread.sleep(3000);
                   secondStage.show();
 
