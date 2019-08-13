@@ -19,6 +19,7 @@ import javafx.util.Callback;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutionException;
 
@@ -52,6 +53,8 @@ public class ControllerSecond implements EventHandler<MouseEvent> {
     @FXML
     private Button process;
 
+    @FXML ProgressIndicator indicator;
+
     @FXML
     private TableColumn<Company, String> templates;
 
@@ -83,6 +86,7 @@ public class ControllerSecond implements EventHandler<MouseEvent> {
         columns.add(status);
         columns.add(sale);
         process.setOnMouseClicked(this);
+        indicator.setVisible(false);
         bitrixbutton.setOnMouseClicked(this::bitrix);
 
     }
@@ -90,17 +94,41 @@ public class ControllerSecond implements EventHandler<MouseEvent> {
     private void bitrix(MouseEvent mouseEvent) {
 
         try {
-            this.table.setDisable(true);
-            fetchAPI fetch = new fetchAPI(Integer.parseInt(this.bitrixfield.getText()));
-            new Thread(fetch).start();
-            fetch.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-                @Override
-                public void handle(WorkerStateEvent workerStateEvent) {
-                    table.setDisable(false);
-                    table.refresh();
-                    enableTable();
-                }
-            });
+            int value = 0;
+            try {
+                value = Integer.parseInt(this.bitrixfield.getText());
+            }
+            catch (NumberFormatException ex) {
+                  value = 0;
+            }
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Bitrix Fetch API");
+            alert.setHeaderText("Information");
+            alert.setContentText("You want to fetch " + value + " companies more. \nIt may take several minutes. ");
+            Optional<ButtonType> result = alert.showAndWait();
+            if ((result.isPresent()) && (result.get() == ButtonType.OK)) {
+                this.table.setDisable(true);
+                this.bitrixbutton.setDisable(true);
+                this.bitrixfield.setDisable(true);
+                this.process.setDisable(true);
+                this.indicator.setVisible(true);
+                fetchAPI fetch = new fetchAPI(value);
+                new Thread(fetch).start();
+                fetch.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+                    @Override
+                    public void handle(WorkerStateEvent workerStateEvent) {
+                        table.setDisable(false);
+                        indicator.setVisible(false);
+                        ControllerSecond.this.bitrixbutton.setDisable(false);
+                        ControllerSecond.this.bitrixfield.setDisable(false);
+                        process.setDisable(false);
+                        table.refresh();
+                        enableTable();
+                    }
+                });
+
+            }
+
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
@@ -135,7 +163,10 @@ public class ControllerSecond implements EventHandler<MouseEvent> {
         count.setText("Companies processing: " + Company.list.size());
         table.setOnMouseClicked(mouseEvent -> {
             if(mouseEvent.getClickCount() == 2 && table.getSelectionModel().getSelectedItem() != null)
-            System.out.println(table.getSelectionModel().getSelectedItem().getCompanyName());
+            {
+                System.out.println(table.getSelectionModel().getSelectedItem().getCompanyName());
+
+            }
         });
     }
 
@@ -157,28 +188,30 @@ public class ControllerSecond implements EventHandler<MouseEvent> {
         for(int t = 0; t<data.size(); t++) {
 
             try {
-                Mail obj = new Mail(data.get(t).getRespPersonID(), data.get(t).getEmail(), "English");
-                new Thread(obj).start();
-                int finalT = t;
-                obj.setOnSucceeded(workerStateEvent -> {
-                     // sent.setText(String.valueOf(Integer.parseInt(sent.getText().trim().split(":", 2)[1]) + 1));
-                    data.get(finalT).setStatus("Sent");
-                    table.refresh();
-                    System.out.println(finalT + " " + data.size());
-                    if(finalT == data.size() -1)
-                        ControllerSecond.this.table.setDisable(false);
-                });
-                obj.setOnRunning(workerStateEvent -> {
+                if(data.get(t).getStatus().equals("Waiting")) { // we will see
+                    Mail obj = new Mail(data.get(t).getRespPersonID(), data.get(t).getEmail(), "English");
+                    new Thread(obj).start();
+                    int finalT = t;
+                    obj.setOnSucceeded(workerStateEvent -> {
+                        // sent.setText(String.valueOf(Integer.parseInt(sent.getText().trim().split(":", 2)[1]) + 1));
+                        data.get(finalT).setStatus("Sent");
+                        table.refresh();
+                        System.out.println(finalT + " " + data.size());
+                        if (finalT == data.size() - 1)
+                            ControllerSecond.this.table.setDisable(false);
+                    });
+                    obj.setOnRunning(workerStateEvent -> {
 
-                    data.get(finalT).setStatus("Sending..");
-                    table.refresh();
-                });
-                obj.setOnFailed(workerStateEvent -> {
+                        data.get(finalT).setStatus("Sending..");
+                        table.refresh();
+                    });
+                    obj.setOnFailed(workerStateEvent -> {
 
-                    data.get(finalT).setStatus("Failed");
-                    table.refresh();
+                        data.get(finalT).setStatus("Failed");
+                        table.refresh();
 
-                });
+                    });
+                }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } catch (ExecutionException e) {
