@@ -79,6 +79,49 @@ public class databaseConnection {
         new Thread(st).start();
         return (ArrayList<String[]>) st.get();
     }
+   /* public ArrayList<String> getCompanies() throws ExecutionException, InterruptedException {
+        Task st = new Task<Integer>()
+        {
+            @Override
+            protected Integer call() throws Exception {
+
+                if(!this.isDone()) {
+                    databaseConnection.this.st.execute(query);
+                }
+                databaseConnection.this.con.close();
+                this.succeeded();
+                return 0;
+            }
+        };
+        new Thread(st).start();
+        return (int) st.get();
+    } */
+    public int saveCompanies(int id, String company_name, String responsible_person, String country, String state, String status, String company_email, String templates) throws ExecutionException, InterruptedException {
+        Task st = new Task<Integer>()
+        {
+            @Override
+            protected Integer call() throws Exception {
+
+                if(!this.isDone()) {
+                    String query = "INSERT INTO COMPANIES (id, company_name, responsible_person, country, status, company_email, state, templates) VALUES('"
+                            + id + "', '" + company_name + "', '" + responsible_person + "', '" + country + "', '" + status + "', '" + company_email + "', '" + state + "', '" + templates + "')";
+                    try {
+                        databaseConnection.this.st.execute(query);
+
+                    }
+                    catch (SQLException ex)
+                    {
+                        System.out.println(ex);
+                    }
+                }
+                databaseConnection.this.con.close();
+                this.succeeded();
+                return 0;
+            }
+        };
+        new Thread(st).start();
+        return (int) st.get();
+    }
     public int getIteration() throws ExecutionException, InterruptedException, SQLException
     {
         Task st = new Task<Integer>()

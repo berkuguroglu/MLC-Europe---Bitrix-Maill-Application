@@ -1,5 +1,6 @@
 package Login.secondPage;
 
+import Database.databaseConnection;
 import Login.Bitrix.bitrixAPI;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -49,8 +50,10 @@ public class Company
                        setResponsiblePerson(idx[1]);
                        Company.list.add(Company.this);
 
+
                    }
                }
+
            }
        });
        Platform.runLater(new Runnable() {
@@ -60,6 +63,22 @@ public class Company
                setCountry(country_codes.getOrDefault(result[0], "Unknown"));
            }
        });
+
+   }
+   public boolean saveCompaniesOnDatabase(JsonArray email)
+   {
+
+               databaseConnection db = new databaseConnection();
+               db.openConnection();
+               try {
+                   db.saveCompanies(Integer.parseInt(Company.this.getID()), Company.this.getCompanyName(), String.valueOf(Company.this.respPersonID), Company.this.getCountry(), Company.this.getStater(), Company.this.getStatus(), email.get(0).getAsJsonObject().get("VALUE").getAsString(), "Template");
+               } catch (ExecutionException e) {
+                   e.printStackTrace();
+               } catch (InterruptedException e) {
+                   e.printStackTrace();
+               }
+               return true;
+
    }
    public String getCompanyName()
    {

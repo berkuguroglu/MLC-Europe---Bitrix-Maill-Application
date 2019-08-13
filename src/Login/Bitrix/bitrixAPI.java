@@ -18,10 +18,10 @@ public class bitrixAPI extends Task<Integer> {
     private ArrayList<JsonArray> company_list;
     private ArrayList<JsonObject> company_details;
 
-    private final int limit = 3; // 1000 companies
+    private final int limit = 2; // 1000 companies
     private final int speed = 300; // dont change !!!!!!!!!!!!!! IMPORTANT !!!!!!!! DONT REDUCE IT, IT BREAKS THE API.
     private Main stageHolder;
-    private int iteration = 0;
+    private int iteration;
     private final String AUTH = "https://mlcomponents.bitrix24.com/rest/12/b6pt3a9mlu6prvpl";
     private String firstMethod = "/crm.company.list?select[]=ID&start=";
     private String secondMethod ="/crm.company.get?id=";
@@ -31,7 +31,9 @@ public class bitrixAPI extends Task<Integer> {
        this.company_list = new ArrayList<>();
        this.company_details = new ArrayList<>();
        this.stageHolder = stageHolder;
-       
+       Database.databaseConnection db = new Database.databaseConnection();
+       db.openConnection();
+       this.iteration = db.getIteration();
 
 
     }
@@ -67,8 +69,9 @@ public class bitrixAPI extends Task<Integer> {
                             phone_number = object.get("result").getAsJsonObject().get("PHONE").getAsJsonArray().get(0).getAsJsonObject().get("VALUE").getAsString();
                             emails = object.get("result").getAsJsonObject().get("EMAIL").getAsJsonArray();
                         }
-                        new Company(object.get("result").getAsJsonObject().get("ID").
+                        Company comp = new Company(object.get("result").getAsJsonObject().get("ID").
                                 getAsInt(), object.get("result").getAsJsonObject().get("TITLE").getAsString(), object.get("result").getAsJsonObject().get("ASSIGNED_BY_ID").getAsInt(), phone_number, emails, data, "Presale", "Waiting");
+                        //comp.saveCompaniesOnDatabase(emails);
                         Thread.sleep(speed);
 
                     } else continue;

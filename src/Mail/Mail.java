@@ -130,7 +130,7 @@ public class Mail extends Task<Void> {
             System.out.println("Preparing to send email");
             System.out.println(myAccountEmail + " " + recepient);
             try {
-                Message m = this.prepareMessage(session, myAccountEmail, "it31@mlceurope.com", country);
+                Message m = this.prepareMessage(session, myAccountEmail, "thomas@mlceurope.com", country);
                 System.out.println("Message sent succesfully");
                 Transport.send(m);
             }
