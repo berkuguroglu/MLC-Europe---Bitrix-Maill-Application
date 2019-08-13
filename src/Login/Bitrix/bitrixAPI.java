@@ -18,7 +18,7 @@ public class bitrixAPI extends Task<Integer> {
     private ArrayList<JsonArray> company_list;
     private ArrayList<JsonObject> company_details;
 
-    private final int limit = 1; // 1000 companies
+    private final int limit = 3; // 1000 companies
     private final int speed = 300; // dont change !!!!!!!!!!!!!! IMPORTANT !!!!!!!! DONT REDUCE IT, IT BREAKS THE API.
     private Main stageHolder;
     private int iteration = 0;
@@ -31,6 +31,7 @@ public class bitrixAPI extends Task<Integer> {
        this.company_list = new ArrayList<>();
        this.company_details = new ArrayList<>();
        this.stageHolder = stageHolder;
+       
 
 
     }

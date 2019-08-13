@@ -1,21 +1,20 @@
 package Login.secondPage;
 
-import Database.databaseConnection;
 import Login.Bitrix.fetchAPI;
-import Login.secondPage.Company;
+import Login.companyDialog;
 import Mail.Mail;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.WorkerStateEvent;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
-import javafx.util.Callback;
 
+import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -165,6 +164,13 @@ public class ControllerSecond implements EventHandler<MouseEvent> {
             if(mouseEvent.getClickCount() == 2 && table.getSelectionModel().getSelectedItem() != null)
             {
                 System.out.println(table.getSelectionModel().getSelectedItem().getCompanyName());
+                Dialog<ArrayList<String>> d = new companyDialog(table.getSelectionModel().getSelectedItem().getCompanyName(), table.getSelectionModel().getSelectedItem().getResponsiblePerson(), table.getSelectionModel().getSelectedItem().getEmail(), table.getSelectionModel().getSelectedItem().getCountry());
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                d.show();
 
             }
         });
