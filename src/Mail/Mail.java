@@ -126,17 +126,23 @@ public class Mail extends Task<Void> {
 
 
             Random r = new Random();
-            Thread.sleep(r.nextInt(10000));
+            Thread.sleep(r.nextInt(300));
             System.out.println("Preparing to send email");
             System.out.println(myAccountEmail + " " + recepient);
             try {
-                Message m = this.prepareMessage(session, myAccountEmail, "thomas@mlceurope.com", country);
+                Message m = this.prepareMessage(session, myAccountEmail, "berk.ugo@gmail.com", country);
                 System.out.println("Message sent succesfully");
                 Transport.send(m);
+            }
+            catch (AuthenticationFailedException ex)
+            {
+                this.failed();
+
             }
             catch (Exception ex)
             {
                 System.out.println(ex);
+                this.failed();
             }
 
             this.succeeded();

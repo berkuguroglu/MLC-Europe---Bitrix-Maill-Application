@@ -4,6 +4,9 @@ import Login.Bitrix.bitrixAPI;
 import Login.secondPage.ControllerSecond;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.concurrent.Task;
+import javafx.concurrent.WorkerStateEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -11,6 +14,8 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.concurrent.ExecutionException;
 
 public class Main extends Application implements Login.Interfaces.LoginConnection {
@@ -84,32 +89,56 @@ public class Main extends Application implements Login.Interfaces.LoginConnectio
         try {
             if(db_class.checkForUsers(username, pass))
             {
-                    bitrixAPI api = new bitrixAPI(this);
-                    Thread thread = new Thread(api);
-                    thread.start();
+
+                    Date dt = new Date();
+                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+                    Database.databaseConnection db_comp = new Database.databaseConnection();
+                    db_comp.openConnection();
+                    Task<Boolean> task = db_comp.getCompanies(formatter.format(dt));
+                    new Thread(task).start();
                     Main.this.cont.label_info.toFront();
                     Main.this.cont.info.setDisable(false);
                     Main.this.cont.loginbutton.setDisable(true);
                     Main.this.cont.USER_NAME.setDisable(true);
                     Main.this.cont.USER_PASS.setDisable(true);
-                    api.setOnSucceeded(workerStateEvent -> {
-                        try {
-                            Database.databaseConnection db_two = new Database.databaseConnection();
-                            db_two.openConnection();
-                            db_two.setIteration(api.get());
-                            openSecondPage();
-                            Main.this.primaryStage.close();
+                    task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+                        @Override
+                        public void handle(WorkerStateEvent workerStateEvent) {
+                            bitrixAPI api = null;
+                            try {
+                                api = new bitrixAPI(Main.this);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            } catch (ExecutionException e) {
+                                e.printStackTrace();
+                            } catch (SQLException e) {
+                                e.printStackTrace();
+                            }
+                            Thread thread = new Thread(api);
+                            thread.start();
 
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        } catch (ExecutionException e) {
-                            e.printStackTrace();
-                        } catch (SQLException e) {
-                            e.printStackTrace();
+                            bitrixAPI finalApi = api;
+                            api.setOnSucceeded((WorkerStateEvent workerState) -> {
+                                try {
+                                    Database.databaseConnection db_two = new Database.databaseConnection();
+                                    db_two.openConnection();
+                                    db_two.setIteration(finalApi.get());
+                                    openSecondPage();
+                                    Main.this.primaryStage.close();
+
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                } catch (ExecutionException e) {
+                                    e.printStackTrace();
+                                } catch (SQLException e) {
+                                    e.printStackTrace();
+                                }
+                            });
                         }
                     });
+
 
 
             }
@@ -117,8 +146,6 @@ public class Main extends Application implements Login.Interfaces.LoginConnectio
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (SQLException e) {
             e.printStackTrace();
         }
 

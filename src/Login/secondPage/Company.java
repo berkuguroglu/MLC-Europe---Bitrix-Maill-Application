@@ -12,7 +12,9 @@ import restRequest.request;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 
@@ -30,8 +32,9 @@ public class Company
    private SimpleStringProperty email;
    private SimpleStringProperty stater;
    private SimpleStringProperty status;
+   private SimpleStringProperty date;
    private int respPersonID;
-   public Company(int ID, String company_name, int responsible_person, String phone_number, JsonArray email, ArrayList<String[]> data, String state, String status) throws IOException {
+   public Company(int ID, String company_name, int responsible_person, String phone_number, JsonArray email, ArrayList<String[]> data, String state, String status, boolean newone, String date) throws IOException {
 
        this.ID = new SimpleStringProperty(String.valueOf(ID));
        this.companyName = new SimpleStringProperty(company_name);
@@ -39,8 +42,14 @@ public class Company
        this.respPersonID = responsible_person;
        this.status = new SimpleStringProperty(status);
        this.stater = new SimpleStringProperty(state);
+       this.date = new SimpleStringProperty(date);
 
-       if(email != null) this.email = new SimpleStringProperty(email.get(0).getAsJsonObject().get("VALUE").getAsString());
+
+       if(email != null)
+       {
+           this.email = new SimpleStringProperty(email.get(0).getAsJsonObject().get("VALUE").getAsString());
+
+       }
        Platform.runLater(new Runnable() {
            @Override
            public void run() {
@@ -50,36 +59,57 @@ public class Company
                        setResponsiblePerson(idx[1]);
                        Company.list.add(Company.this);
 
+                       if(email != null && newone) {
+                           try {
+                               databaseConnection db = new databaseConnection();
+                               db.openConnection();
+                               db.saveCompanies(Integer.parseInt(Company.this.getID()), Company.this.getCompanyName(), String.valueOf(Company.this.respPersonID), Company.this.getCountry(), Company.this.getStater(), Company.this.getStatus(), email.get(0).getAsJsonObject().get("VALUE").getAsString(), "Template");
+                           } catch (ExecutionException e) {
+                               e.printStackTrace();
+                           } catch (InterruptedException e) {
+                               e.printStackTrace();
+                           }
+                       }
+
 
                    }
                }
 
            }
        });
-       Platform.runLater(new Runnable() {
-           @Override
-           public void run() {
-               String[] result = phone_number.split(" ", 2);
-               setCountry(country_codes.getOrDefault(result[0], "Unknown"));
-           }
-       });
+
+       String[] result = phone_number.split(" ", 2);
+       setCountry(country_codes.getOrDefault(result[0], "Unknown"));
 
    }
-   public boolean saveCompaniesOnDatabase(JsonArray email)
-   {
+    public Company(int ID, String company_name, int responsible_person, ArrayList<String[]> data, String email, String state, String status, String date, String country) throws IOException {
 
-               databaseConnection db = new databaseConnection();
-               db.openConnection();
-               try {
-                   db.saveCompanies(Integer.parseInt(Company.this.getID()), Company.this.getCompanyName(), String.valueOf(Company.this.respPersonID), Company.this.getCountry(), Company.this.getStater(), Company.this.getStatus(), email.get(0).getAsJsonObject().get("VALUE").getAsString(), "Template");
-               } catch (ExecutionException e) {
-                   e.printStackTrace();
-               } catch (InterruptedException e) {
-                   e.printStackTrace();
-               }
-               return true;
+        this.ID = new SimpleStringProperty(String.valueOf(ID));
+        this.companyName = new SimpleStringProperty(company_name);
+        this.state = true;
+        this.respPersonID = responsible_person;
+        this.status = new SimpleStringProperty(status);
+        this.stater = new SimpleStringProperty(state);
+        this.date = new SimpleStringProperty(date);
+        this.email = new SimpleStringProperty(email);
+        this.country = new SimpleStringProperty(country);
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                for(String[] idx : data)
+                {
+                    if(idx[0].equals(String.valueOf(responsible_person))) {
+                        setResponsiblePerson(idx[1]);
+                        Company.list.add(Company.this);
 
-   }
+
+                    }
+                }
+
+            }
+        });
+    }
+
    public String getCompanyName()
    {
        return this.companyName.get();
@@ -106,6 +136,14 @@ public class Company
    public void setCountry(String value)
    {
        this.country = new SimpleStringProperty(value);
+   }
+   public void setDate(String value)
+   {
+       this.date = new SimpleStringProperty(value);
+   }
+   public String getDate()
+   {
+       return this.date.get();
    }
    public String getEmail()
    {

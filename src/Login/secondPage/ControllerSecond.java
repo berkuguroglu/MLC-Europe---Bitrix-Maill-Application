@@ -1,11 +1,14 @@
 package Login.secondPage;
 
+import Database.databaseConnection;
 import Login.Bitrix.fetchAPI;
 import Login.companyDialog;
 import Mail.Mail;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.WorkerStateEvent;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -17,7 +20,10 @@ import javafx.scene.input.MouseEvent;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutionException;
@@ -67,8 +73,13 @@ public class ControllerSecond implements EventHandler<MouseEvent> {
     @FXML
     private TableColumn<Company, String> status;
 
+    @FXML
+    private TableColumn<Company, String> date;
+
     @FXML private Button bitrixbutton;
     @FXML private TextField bitrixfield;
+
+    @FXML private DatePicker datepicker;
 
 
     @FXML
@@ -87,6 +98,21 @@ public class ControllerSecond implements EventHandler<MouseEvent> {
         process.setOnMouseClicked(this);
         indicator.setVisible(false);
         bitrixbutton.setOnMouseClicked(this::bitrix);
+        datepicker.setDayCellFactory(picker -> new DateCell() {
+            public void updateItem(LocalDate date, boolean empty) {
+                super.updateItem(date, empty);
+                LocalDate today = LocalDate.now();
+
+                setDisable(date.compareTo(today) > 0 );
+            }
+        });
+        datepicker.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                datepicker.getValue();
+            }
+        });
+
 
     }
 
@@ -156,6 +182,7 @@ public class ControllerSecond implements EventHandler<MouseEvent> {
         email.setCellValueFactory(new PropertyValueFactory<Company, String>("email"));
         sale.setCellValueFactory(new PropertyValueFactory<Company, String>("stater"));
         status.setCellValueFactory(new PropertyValueFactory<Company, String>("status"));
+        date.setCellValueFactory(new PropertyValueFactory<Company, String>("date"));
 
 
         table.setItems(data);
@@ -201,7 +228,25 @@ public class ControllerSecond implements EventHandler<MouseEvent> {
                     obj.setOnSucceeded(workerStateEvent -> {
                         // sent.setText(String.valueOf(Integer.parseInt(sent.getText().trim().split(":", 2)[1]) + 1));
                         data.get(finalT).setStatus("Sent");
+                        Date dt = new Date();
+                        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+                        data.get(finalT).setDate(formatter.format(dt));
                         table.refresh();
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+
+                                databaseConnection db = new databaseConnection();
+                                db.openConnection();
+                                try {
+                                    db.updateStatus(Integer.parseInt(data.get(finalT).getID()), formatter.format(dt));
+                                } catch (ExecutionException e) {
+                                    e.printStackTrace();
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
                         System.out.println(finalT + " " + data.size());
                         if (finalT == data.size() - 1)
                             ControllerSecond.this.table.setDisable(false);

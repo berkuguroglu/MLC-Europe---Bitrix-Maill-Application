@@ -1,6 +1,7 @@
 package Database;
 
 
+import Login.secondPage.Company;
 import Users.Users;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -9,12 +10,12 @@ import javafx.scene.control.ButtonType;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 
 public class databaseConnection {
 
 
-    private static databaseConnection databaseObject = null;
     private Connection con;
     private Statement st;
     private ResultSet rs;
@@ -33,7 +34,6 @@ public class databaseConnection {
 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            databaseConnection.databaseObject = this;
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -57,7 +57,7 @@ public class databaseConnection {
     }
     public ArrayList<String[]> getSalesTeam() throws ExecutionException, InterruptedException, SQLException
     {
-        Task st = new Task<ArrayList<String[]>>()
+        Task<ArrayList<String[]>> st = new Task<ArrayList<String[]>>()
         {
             @Override
             protected ArrayList<String[]> call() throws Exception {
@@ -72,32 +72,83 @@ public class databaseConnection {
                     }
                 }
                 this.done();
-                databaseConnection.this.con.close();
+                //databaseConnection.this.con.close();
                 return lst;
             }
         };
         new Thread(st).start();
-        return (ArrayList<String[]>) st.get();
+        return st.get();
     }
-   /* public ArrayList<String> getCompanies() throws ExecutionException, InterruptedException {
-        Task st = new Task<Integer>()
+    public Task<Boolean> getCompanies(String date) throws ExecutionException, InterruptedException {
+        Task<Boolean> st = new Task<Boolean>()
         {
             @Override
-            protected Integer call() throws Exception {
+            public Boolean call() throws Exception {
 
+                HashMap<String, String> hashMap = new HashMap<>();
+                String query = "SELECT * FROM COMPANIES WHERE lastcontacted = '" + date.trim() + "' OR lastcontacted = 'Not yet'";
                 if(!this.isDone()) {
-                    databaseConnection.this.st.execute(query);
+                    Statement st = con.createStatement();
+                    ResultSet rst = st.executeQuery(query);
+                    while(rst.next())
+                    {
+                        try {
+                            hashMap.put("id", String.valueOf(rst.getInt("id")));
+                            hashMap.put("companyName", rst.getString("company_name"));
+                            hashMap.put("respperson", rst.getString("responsible_person"));
+                            hashMap.put("country", rst.getString("country"));
+                            hashMap.put("status", rst.getString("status"));
+                            hashMap.put("company_email", rst.getString("company_email"));
+                            hashMap.put("state", rst.getString("state"));
+                            hashMap.put("templates", rst.getString("templates"));
+                            hashMap.put("lastcontacted", rst.getString("lastcontacted"));
+                            System.out.println("afda");
+                            new Company(rst.getInt("id"), rst.getString("company_name"), Integer.parseInt(rst.getString("responsible_person")), getSalesTeam(), rst.getString("company_email"), rst.getString("state"), rst.getString("status"), rst.getString("lastcontacted"), rst.getString("country"));
+
+                        }
+                        catch (Exception ex)
+                        {
+                            ex.printStackTrace();
+                        }
+
+                    }
+                    databaseConnection.this.con.close();
+
                 }
-                databaseConnection.this.con.close();
                 this.succeeded();
-                return 0;
+                return true;
             }
         };
         new Thread(st).start();
-        return (int) st.get();
-    } */
+        return st;
+    }
+   public int updateStatus(int id, String date) throws ExecutionException, InterruptedException {
+       Task<Integer> st = new Task<Integer>()
+       {
+           @Override
+           protected Integer call() throws Exception {
+
+               if(!this.isDone()) {
+                   String query = "UPDATE COMPANIES SET status = 'Sent', lastcontacted ='" + date + "'  WHERE id=" + id;
+                   try {
+                       databaseConnection.this.st.execute(query);
+
+                   }
+                   catch (SQLException ex)
+                   {
+                       System.out.println(ex);
+                   }
+               }
+               databaseConnection.this.con.close();
+               this.succeeded();
+               return 0;
+           }
+       };
+       new Thread(st).start();
+       return st.get();
+   }
     public int saveCompanies(int id, String company_name, String responsible_person, String country, String state, String status, String company_email, String templates) throws ExecutionException, InterruptedException {
-        Task st = new Task<Integer>()
+        Task<Integer> st = new Task<Integer>()
         {
             @Override
             protected Integer call() throws Exception {
@@ -120,11 +171,11 @@ public class databaseConnection {
             }
         };
         new Thread(st).start();
-        return (int) st.get();
+        return st.get();
     }
     public int getIteration() throws ExecutionException, InterruptedException, SQLException
     {
-        Task st = new Task<Integer>()
+        Task<Integer> st = new Task<Integer>()
         {
             @Override
             protected Integer call() throws Exception {
@@ -145,11 +196,11 @@ public class databaseConnection {
             }
         };
         new Thread(st).start();
-        return (int) st.get();
+        return st.get();
     }
     public boolean setIteration(final int iter) throws ExecutionException, InterruptedException, SQLException
     {
-        Task st = new Task<Boolean>()
+        Task<Boolean> st = new Task<Boolean>()
         {
             @Override
             protected Boolean call() throws Exception {
@@ -172,7 +223,7 @@ public class databaseConnection {
             }
         };
         new Thread(st).start();
-        return (boolean) st.get();
+        return st.get();
     }
     public boolean checkForUsers(String username, String pass) throws InterruptedException, ExecutionException {
 
