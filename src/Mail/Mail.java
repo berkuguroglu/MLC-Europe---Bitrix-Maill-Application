@@ -1,15 +1,14 @@
 package Mail;
 
 import Database.databaseConnection;
+import com.mysql.cj.exceptions.PasswordExpiredException;
+import com.sun.mail.smtp.SMTPSendFailedException;
 import javafx.concurrent.Task;
 
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
 import javax.mail.*;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
+import javax.mail.internet.*;
 import java.io.File;
 import java.net.URL;
 import java.sql.SQLException;
@@ -57,12 +56,7 @@ public class Mail extends Task<Void> {
         properties.put("mail.smtp.port", "587");
         String[] result = findResp(this.responsiblePerson);
          if(result != null) {
-             session = Session.getInstance(properties, new Authenticator() {
-                 @Override
-                 protected PasswordAuthentication getPasswordAuthentication() {
-                     return new PasswordAuthentication(result[3], result[2]);
-                 }
-             });
+
              this.myAccountEmail = result[3];
              this.password = result[2];
              this.salesname = result[1];
@@ -130,22 +124,30 @@ public class Mail extends Task<Void> {
             System.out.println("Preparing to send email");
             System.out.println(myAccountEmail + " " + recepient);
             try {
-                Message m = this.prepareMessage(session, myAccountEmail, "berk.ugo@gmail.com", country);
+                session = Session.getInstance(properties, new Authenticator() {
+                    @Override
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        PasswordAuthentication ps = new PasswordAuthentication(myAccountEmail, password);
+                        return ps;
+                    }
+                });
+                Message m = this.prepareMessage(session, myAccountEmail, "it31@mlceurope.com", country);
                 System.out.println("Message sent succesfully");
                 Transport.send(m);
+                this.succeeded();
+
             }
             catch (AuthenticationFailedException ex)
             {
                 this.failed();
 
             }
-            catch (Exception ex)
+            catch (AddressException ex)
             {
-                System.out.println(ex);
+                ex.printStackTrace();
                 this.failed();
             }
 
-            this.succeeded();
 
         }
         return null;

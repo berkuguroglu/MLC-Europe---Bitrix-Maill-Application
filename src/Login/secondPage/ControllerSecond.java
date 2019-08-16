@@ -4,9 +4,13 @@ import Database.databaseConnection;
 import Login.Bitrix.fetchAPI;
 import Login.companyDialog;
 import Mail.Mail;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -16,6 +20,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
+import restRequest.request;
 
 import java.io.IOException;
 import java.net.URL;
@@ -109,7 +114,53 @@ public class ControllerSecond implements EventHandler<MouseEvent> {
         datepicker.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                datepicker.getValue();
+                databaseConnection db = new databaseConnection();
+                db.openConnection();
+                Date dt = new Date();
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+
+                try {
+                    Task task;
+                    if(formatter.format(dt).equals(datepicker.getValue().toString())) {
+                        task = db.getCompanies(datepicker.getValue().toString(), true);
+                        table.setDisable(true);
+                        indicator.setVisible(true);
+                        task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+                            @Override
+                            public void handle(WorkerStateEvent workerStateEvent) {
+                                table.refresh();
+                                table.setDisable(false);
+                                indicator.setVisible(false);
+                                bitrixbutton.setDisable(false);
+                                bitrixfield.setDisable(false);
+                                process.setDisable(false);
+                            }
+                        });
+                    }
+                    else
+                    {
+                        task = db.getCompanies(datepicker.getValue().toString(), false);
+                        table.setDisable(true);
+                        indicator.setVisible(true);
+                        bitrixbutton.setDisable(true);
+                        bitrixfield.setDisable(true);
+                        process.setDisable(true);
+                        task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+                            @Override
+                            public void handle(WorkerStateEvent workerStateEvent) {
+                                table.refresh();
+                                table.setDisable(false);
+                                indicator.setVisible(false);
+                            }
+                        });
+
+                    }
+
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -190,13 +241,27 @@ public class ControllerSecond implements EventHandler<MouseEvent> {
         table.setOnMouseClicked(mouseEvent -> {
             if(mouseEvent.getClickCount() == 2 && table.getSelectionModel().getSelectedItem() != null)
             {
-                System.out.println(table.getSelectionModel().getSelectedItem().getCompanyName());
-                Dialog<ArrayList<String>> d = new companyDialog(table.getSelectionModel().getSelectedItem().getCompanyName(), table.getSelectionModel().getSelectedItem().getResponsiblePerson(), table.getSelectionModel().getSelectedItem().getEmail(), table.getSelectionModel().getSelectedItem().getCountry());
+
+                String URL = "https://mlcomponents.bitrix24.com/rest/12/b6pt3a9mlu6prvpl/crm.company.get?id=" + table.getSelectionModel().getSelectedItem().getID().trim();
+                JsonObject result = null;
+                ArrayList<String> mails = new ArrayList<>();
                 try {
-                    Thread.sleep(10);
-                } catch (InterruptedException e) {
+                    request req;
+                    req = new request(URL);
+                    JsonParser parser = new JsonParser();
+                    result = (JsonObject) parser.parse(req.getResult());
+                    if(result.get("result").getAsJsonObject().has("EMAIL"))
+                    {
+                        for(JsonElement object : result.get("result").getAsJsonObject().get("EMAIL").getAsJsonArray())
+                        {
+                            mails.add(object.getAsJsonObject().get("VALUE").getAsString());
+                        }
+                    }
+
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
+                Dialog<ArrayList<String>> d = new companyDialog(table.getSelectionModel().getSelectedItem().getCompanyName(), table.getSelectionModel().getSelectedItem().getResponsiblePerson(), table.getSelectionModel().getSelectedItem().getEmail(), table.getSelectionModel().getSelectedItem().getCountry(), mails);
                 d.show();
 
             }

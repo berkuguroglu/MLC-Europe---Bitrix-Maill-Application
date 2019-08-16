@@ -59,16 +59,16 @@ public class Main extends Application implements Login.Interfaces.LoginConnectio
       secondStage.setScene(new Scene(secondPage, secondStage.getWidth(), secondStage.getHeight()));
       ControllerSecond cont = secondPageLoader.getController();
         cont.enableTable();
+        secondStage.show();
 
 
 
-
+/*
         Platform.runLater(new Runnable() {
           @Override
           public void run() {
               try {
-                  Thread.sleep(3000);
-                  secondStage.show();
+
 
 
               } catch (InterruptedException e) {
@@ -76,7 +76,7 @@ public class Main extends Application implements Login.Interfaces.LoginConnectio
               }
 
           }
-      });
+      });*/
 
 
     }
@@ -94,7 +94,7 @@ public class Main extends Application implements Login.Interfaces.LoginConnectio
                     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
                     Database.databaseConnection db_comp = new Database.databaseConnection();
                     db_comp.openConnection();
-                    Task<Boolean> task = db_comp.getCompanies(formatter.format(dt));
+                    Task<Boolean> task = db_comp.getCompanies(formatter.format(dt), true);
                     new Thread(task).start();
                     Main.this.cont.label_info.toFront();
                     Main.this.cont.info.setDisable(false);
@@ -123,6 +123,7 @@ public class Main extends Application implements Login.Interfaces.LoginConnectio
                                     Database.databaseConnection db_two = new Database.databaseConnection();
                                     db_two.openConnection();
                                     db_two.setIteration(finalApi.get());
+                                    Thread.sleep(3000);
                                     openSecondPage();
                                     Main.this.primaryStage.close();
 

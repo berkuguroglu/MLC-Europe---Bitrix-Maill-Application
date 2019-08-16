@@ -79,48 +79,87 @@ public class databaseConnection {
         new Thread(st).start();
         return st.get();
     }
-    public Task<Boolean> getCompanies(String date) throws ExecutionException, InterruptedException {
-        Task<Boolean> st = new Task<Boolean>()
+    public Task<Boolean> getCompanies(String date, boolean state) throws ExecutionException, InterruptedException {
+        if(state)
         {
-            @Override
-            public Boolean call() throws Exception {
+            Task<Boolean> st = new Task<Boolean>() {
+                @Override
+                public Boolean call() throws Exception {
 
-                HashMap<String, String> hashMap = new HashMap<>();
-                String query = "SELECT * FROM COMPANIES WHERE lastcontacted = '" + date.trim() + "' OR lastcontacted = 'Not yet'";
-                if(!this.isDone()) {
-                    Statement st = con.createStatement();
-                    ResultSet rst = st.executeQuery(query);
-                    while(rst.next())
-                    {
-                        try {
-                            hashMap.put("id", String.valueOf(rst.getInt("id")));
-                            hashMap.put("companyName", rst.getString("company_name"));
-                            hashMap.put("respperson", rst.getString("responsible_person"));
-                            hashMap.put("country", rst.getString("country"));
-                            hashMap.put("status", rst.getString("status"));
-                            hashMap.put("company_email", rst.getString("company_email"));
-                            hashMap.put("state", rst.getString("state"));
-                            hashMap.put("templates", rst.getString("templates"));
-                            hashMap.put("lastcontacted", rst.getString("lastcontacted"));
-                            System.out.println("afda");
-                            new Company(rst.getInt("id"), rst.getString("company_name"), Integer.parseInt(rst.getString("responsible_person")), getSalesTeam(), rst.getString("company_email"), rst.getString("state"), rst.getString("status"), rst.getString("lastcontacted"), rst.getString("country"));
+                    HashMap<String, String> hashMap = new HashMap<>();
+                    String query = "SELECT * FROM COMPANIES WHERE lastcontacted = '" + date.trim() + "' OR lastcontacted = 'Not yet'";
+                    if (!this.isDone()) {
+                        Statement st = con.createStatement();
+                        ResultSet rst = st.executeQuery(query);
+                        Company.list.clear();
+                        while (rst.next()) {
+                            try {
+                                hashMap.put("id", String.valueOf(rst.getInt("id")));
+                                hashMap.put("companyName", rst.getString("company_name"));
+                                hashMap.put("respperson", rst.getString("responsible_person"));
+                                hashMap.put("country", rst.getString("country"));
+                                hashMap.put("status", rst.getString("status"));
+                                hashMap.put("company_email", rst.getString("company_email"));
+                                hashMap.put("state", rst.getString("state"));
+                                hashMap.put("templates", rst.getString("templates"));
+                                hashMap.put("lastcontacted", rst.getString("lastcontacted"));
+                                new Company(rst.getInt("id"), rst.getString("company_name"), Integer.parseInt(rst.getString("responsible_person")), getSalesTeam(), rst.getString("company_email"), rst.getString("state"), rst.getString("status"), rst.getString("lastcontacted"), rst.getString("country"));
+
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
 
                         }
-                        catch (Exception ex)
-                        {
-                            ex.printStackTrace();
-                        }
+                        databaseConnection.this.con.close();
 
                     }
-                    databaseConnection.this.con.close();
-
+                    this.succeeded();
+                    return true;
                 }
-                this.succeeded();
-                return true;
-            }
-        };
-        new Thread(st).start();
-        return st;
+            };
+            new Thread(st).start();
+            return st;
+        }
+        else
+        {
+            Task<Boolean> st = new Task<Boolean>() {
+                @Override
+                public Boolean call() throws Exception {
+
+                    HashMap<String, String> hashMap = new HashMap<>();
+                    String query = "SELECT * FROM COMPANIES WHERE lastcontacted = '" + date.trim() + "'";
+                    if (!this.isDone()) {
+                        Statement st = con.createStatement();
+                        ResultSet rst = st.executeQuery(query);
+                        Company.list.clear();
+                        while (rst.next()) {
+                            try {
+                                hashMap.put("id", String.valueOf(rst.getInt("id")));
+                                hashMap.put("companyName", rst.getString("company_name"));
+                                hashMap.put("respperson", rst.getString("responsible_person"));
+                                hashMap.put("country", rst.getString("country"));
+                                hashMap.put("status", rst.getString("status"));
+                                hashMap.put("company_email", rst.getString("company_email"));
+                                hashMap.put("state", rst.getString("state"));
+                                hashMap.put("templates", rst.getString("templates"));
+                                hashMap.put("lastcontacted", rst.getString("lastcontacted"));
+                                new Company(rst.getInt("id"), rst.getString("company_name"), Integer.parseInt(rst.getString("responsible_person")), getSalesTeam(), rst.getString("company_email"), rst.getString("state"), rst.getString("status"), rst.getString("lastcontacted"), rst.getString("country"));
+
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+
+                        }
+                        databaseConnection.this.con.close();
+
+                    }
+                    this.succeeded();
+                    return true;
+                }
+            };
+            new Thread(st).start();
+            return st;
+        }
     }
    public int updateStatus(int id, String date) throws ExecutionException, InterruptedException {
        Task<Integer> st = new Task<Integer>()

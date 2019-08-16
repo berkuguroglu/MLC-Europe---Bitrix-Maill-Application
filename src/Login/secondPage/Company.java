@@ -8,6 +8,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.ObservableList;
 import restRequest.request;
 
 import java.io.IOException;
@@ -43,11 +44,22 @@ public class Company
        this.status = new SimpleStringProperty(status);
        this.stater = new SimpleStringProperty(state);
        this.date = new SimpleStringProperty(date);
+       this.mails = new ArrayList<>();
 
 
        if(email != null)
        {
            this.email = new SimpleStringProperty(email.get(0).getAsJsonObject().get("VALUE").getAsString());
+         /*  Platform.runLater(new Runnable() {
+               @Override
+               public void run() {
+                   for(int i = 0; i<email.size(); i++) {
+                       mails.add(email.get(i).getAsJsonObject().get("VALUE").getAsString());
+                       System.out.println(email.get(i).getAsJsonObject().get("VALUE").getAsString());
+                   }
+               }
+           });*/
+
 
        }
        Platform.runLater(new Runnable() {
@@ -93,6 +105,7 @@ public class Company
         this.date = new SimpleStringProperty(date);
         this.email = new SimpleStringProperty(email);
         this.country = new SimpleStringProperty(country);
+        this.mails = new ArrayList<>();
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
@@ -150,6 +163,8 @@ public class Company
        return this.email.get();
    }
    public int getRespPersonID() {return this.respPersonID; }
+   public ArrayList<String> getMails() { return this.mails; }
+
    public static void setCountries()
    {
        country_codes.put("+90", "Turkey");

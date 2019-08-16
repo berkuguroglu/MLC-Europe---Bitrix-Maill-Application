@@ -5,12 +5,14 @@
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="427.0" prefWidth="583.0" style="-fx-border-color: #000000;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Login.secondPage.detailController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="429.0" prefWidth="980.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Login.secondPage.detailController">
    <children>
       <Label fx:id="companyLabel" text="Company's Detail">
          <padding>
@@ -20,7 +22,7 @@
             <Font name="Calibri Bold" size="24.0" />
          </font>
       </Label>
-      <VBox prefHeight="427.0" prefWidth="583.0">
+      <VBox prefHeight="427.0" prefWidth="517.0">
          <children>
             <VBox prefHeight="186.0" prefWidth="388.0">
                <children>
@@ -83,5 +85,10 @@
             <Insets bottom="50.0" left="50.0" right="50.0" top="50.0" />
          </padding>
       </VBox>
+      <TextField layoutX="517.0" layoutY="97.0" prefHeight="26.0" prefWidth="394.0" promptText="Title of the template" />
+      <TextArea layoutX="517.0" layoutY="136.0" prefHeight="226.0" prefWidth="394.0" promptText="Content" />
+      <Button layoutX="517.0" layoutY="369.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="178.0" text="Create" />
+      <Button layoutX="714.0" layoutY="369.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="197.0" text="Test" />
+      <Label layoutX="517.0" layoutY="69.0" text="Create a new template" />
    </children>
 </AnchorPane>

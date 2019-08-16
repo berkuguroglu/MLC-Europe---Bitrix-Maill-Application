@@ -16,18 +16,12 @@ import java.util.ArrayList;
 public class companyDialog extends Dialog<ArrayList<String>> {
 
 
-        public companyDialog(String name, String responsiblePerson, String email, String country) {
+        public companyDialog(String name, String responsiblePerson, String email, String country, ArrayList<String> mails) {
 
 
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("Views/companysDetail.fxml"));
-            Platform.runLater(new Runnable() {
-                @Override
-                public void run() {
-                    detailController controller = loader.getController();
-                    controller.setLabel(name, responsiblePerson, email, country);
 
-                }
-            });
+
                 Parent parent = null;
                 try {
                     parent = loader.load();
@@ -36,13 +30,22 @@ public class companyDialog extends Dialog<ArrayList<String>> {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                getDialogPane().setHeaderText("Edit Company");
                 getDialogPane().setContent(parent);
                 getDialogPane().getButtonTypes().addAll(ButtonType.APPLY, ButtonType.CANCEL);
+                System.out.println(mails);
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    detailController controller = loader.getController();
+                    controller.setLabel(name, responsiblePerson, email, country, mails);
+
+                }
+            });
                 setResultConverter(new Callback<ButtonType, ArrayList<String>>() {
                     @Override
                     public ArrayList<String> call(ButtonType buttonType) {
 
-                        System.out.println(buttonType);
                         return new ArrayList<>();
                     }
                 });

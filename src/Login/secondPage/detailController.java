@@ -1,5 +1,6 @@
 package Login.secondPage;
 
+import com.google.gson.JsonObject;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -10,6 +11,8 @@ import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class detailController {
 
@@ -57,14 +60,12 @@ public class detailController {
             });
         }
 
-        public void setLabel(String companyName, String responsiblePerson, String email, String country)
+        public void setLabel(String companyName, String responsiblePerson, String email, String country, ArrayList<String> mails)
         {
-            ArrayList<String> list = new ArrayList<>();
             ArrayList<String> list_country = new ArrayList<>();
-            list.add(email);
             list_country.add(country);
             this.companyLabel.setText(companyName + " | " + responsiblePerson);
-            this.email.setItems(FXCollections.observableList(list));
+            this.email.setItems(FXCollections.observableList(mails));
             this.countries.setItems(FXCollections.observableList(list_country));
 
         }
