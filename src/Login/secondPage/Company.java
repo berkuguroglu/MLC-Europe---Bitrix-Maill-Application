@@ -129,6 +129,7 @@ public class Company
    }
    public String getStatus() {return this.status.get(); }
    public String getStater() {return this.stater.get(); }
+   public void setStater(String value) { this.stater = new SimpleStringProperty(value); }
    public void setStatus(String s) {this.status.set(s);}
    public String getCountry()
    {
@@ -149,6 +150,10 @@ public class Company
    public void setCountry(String value)
    {
        this.country = new SimpleStringProperty(value);
+   }
+   public void setEmail(String value)
+   {
+       this.email = new SimpleStringProperty(value);
    }
    public void setDate(String value)
    {
@@ -179,6 +184,16 @@ public class Company
        country_codes.put("+44", "United Kingdom");
        country_codes.put("+43", "Austria");
 
+   }
+   public static Company find(int id)
+   {
+       for(Company comp : Company.list)
+       {
+           if(Integer.parseInt(comp.getID()) == id) {
+               return comp;
+           }
+       }
+       return null;
    }
 
 

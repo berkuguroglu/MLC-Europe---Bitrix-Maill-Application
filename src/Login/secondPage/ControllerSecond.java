@@ -27,11 +27,9 @@ import java.net.URL;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Consumer;
 
 public class ControllerSecond implements EventHandler<MouseEvent> {
 
@@ -144,13 +142,23 @@ public class ControllerSecond implements EventHandler<MouseEvent> {
                         indicator.setVisible(true);
                         bitrixbutton.setDisable(true);
                         bitrixfield.setDisable(true);
-                        process.setDisable(true);
                         task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
                             @Override
                             public void handle(WorkerStateEvent workerStateEvent) {
                                 table.refresh();
                                 table.setDisable(false);
                                 indicator.setVisible(false);
+                                ObservableList<Company> data = FXCollections.observableList(Company.list);
+                                if(data.size() == 0) process.setDisable(true);
+                                Platform.runLater(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        for(int t = 0; t<data.size(); t++) {
+                                            data.get(t).setStatus("Send again");
+                                        }
+                                    }
+                                });
+
                             }
                         });
 
@@ -261,8 +269,37 @@ public class ControllerSecond implements EventHandler<MouseEvent> {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                Dialog<ArrayList<String>> d = new companyDialog(table.getSelectionModel().getSelectedItem().getCompanyName(), table.getSelectionModel().getSelectedItem().getResponsiblePerson(), table.getSelectionModel().getSelectedItem().getEmail(), table.getSelectionModel().getSelectedItem().getCountry(), mails);
-                d.show();
+                Dialog<HashMap<String, String>> d = new companyDialog(table.getSelectionModel().getSelectedItem().getID(), table.getSelectionModel().getSelectedItem().getCompanyName(), table.getSelectionModel().getSelectedItem().getResponsiblePerson(), table.getSelectionModel().getSelectedItem().getEmail(), table.getSelectionModel().getSelectedItem().getCountry(), table.getSelectionModel().getSelectedItem().getStater(), mails);
+                d.setTitle("MLC Europe | Edit");
+                d.showAndWait();
+                if(!d.getResult().isEmpty()) {
+                    databaseConnection db = new databaseConnection();
+                    db.openConnection();
+                    try {
+                        db.updateCompany(d.getResult().get("ID"), d.getResult().get("Email"), d.getResult().get("State")).setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+                            @Override
+                            public void handle(WorkerStateEvent workerStateEvent) {
+                                Company comp = Company.find(Integer.parseInt(d.getResult().get("ID")));
+                                comp.setEmail(d.getResult().get("Email"));
+                                comp.setStater(d.getResult().get("State"));
+                                Platform.runLater(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        table.refresh();
+
+                                    }
+                                });
+
+                            }
+                        });
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                }
 
             }
         });
@@ -272,62 +309,15 @@ public class ControllerSecond implements EventHandler<MouseEvent> {
     @Override
     public void handle(MouseEvent mouseEvent)
     {
-        try {
-            Mail.Templates.putTeam();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        ObservableList<Company> data = FXCollections.observableList(Company.list);
-        this.process.setDisable(true);
-        for(int t = 0; t<data.size(); t++) {
-
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Starting Process");
+        alert.setHeaderText("Send Mails");
+        alert.setContentText("If there is another process which is running currently, do not start another process!\nIt may break the application!\nWait for the process to complete itself.\n");
+        Optional<ButtonType> options = alert.showAndWait();
+        if(options.get() == ButtonType.OK)
+        {
             try {
-                if(data.get(t).getStatus().equals("Waiting")) { // we will see
-                    Mail obj = new Mail(data.get(t).getRespPersonID(), data.get(t).getEmail(), "English");
-                    new Thread(obj).start();
-                    int finalT = t;
-                    obj.setOnSucceeded(workerStateEvent -> {
-                        // sent.setText(String.valueOf(Integer.parseInt(sent.getText().trim().split(":", 2)[1]) + 1));
-                        data.get(finalT).setStatus("Sent");
-                        Date dt = new Date();
-                        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-                        data.get(finalT).setDate(formatter.format(dt));
-                        table.refresh();
-                        Platform.runLater(new Runnable() {
-                            @Override
-                            public void run() {
-
-                                databaseConnection db = new databaseConnection();
-                                db.openConnection();
-                                try {
-                                    db.updateStatus(Integer.parseInt(data.get(finalT).getID()), formatter.format(dt));
-                                } catch (ExecutionException e) {
-                                    e.printStackTrace();
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        });
-                        System.out.println(finalT + " " + data.size());
-                        if (finalT == data.size() - 1)
-                            ControllerSecond.this.table.setDisable(false);
-                    });
-                    obj.setOnRunning(workerStateEvent -> {
-
-                        data.get(finalT).setStatus("Sending..");
-                        table.refresh();
-                    });
-                    obj.setOnFailed(workerStateEvent -> {
-
-                        data.get(finalT).setStatus("Failed");
-                        table.refresh();
-
-                    });
-                }
+                Mail.Templates.putTeam();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } catch (ExecutionException e) {
@@ -335,12 +325,68 @@ public class ControllerSecond implements EventHandler<MouseEvent> {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
+            ObservableList<Company> data = FXCollections.observableList(Company.list);
+            for(int t = 0; t<data.size(); t++) {
+
+                try {
+                    if((data.get(t).getStatus().equals("Waiting") || data.get(t).getStatus().equals("Send again") || data.get(t).getStatus().equals("Failed")) && !Objects.equals(data.get(t).getStater(), "Sale")) { // we will see
+                        Mail obj = new Mail(data.get(t).getRespPersonID(), data.get(t).getEmail(), "English");
+                        int finalT = t;
+                        obj.setOnSucceeded(workerStateEvent -> {
+                            // sent.setText(String.valueOf(Integer.parseInt(sent.getText().trim().split(":", 2)[1]) + 1));
+                            data.get(finalT).setStatus("Sent");
+                            Date dt = new Date();
+                            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+                            data.get(finalT).setDate(formatter.format(dt));
+                            table.refresh();
+                            Platform.runLater(new Runnable() {
+                                @Override
+                                public void run() {
+
+                                    databaseConnection db = new databaseConnection();
+                                    db.openConnection();
+                                    try {
+                                        db.updateStatus(Integer.parseInt(data.get(finalT).getID()), formatter.format(dt));
+                                    } catch (ExecutionException e) {
+                                        e.printStackTrace();
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            });
+                            System.out.println(finalT + " " + data.size());
+                            if (finalT == data.size() - 1)
+                                ControllerSecond.this.table.setDisable(false);
+                        });
+                        obj.setOnRunning(workerStateEvent -> {
+
+                            data.get(finalT).setStatus("Sending..");
+                            table.refresh();
+                        });
+                        obj.setOnFailed(workerStateEvent -> {
+
+                            data.get(finalT).setStatus("Failed");
+                            table.refresh();
+
+                        });
+                        new Thread(obj).start();
+
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
 
 
 
-        }
+            }
 
 
-    }
+         }
+      }
+
 
 }

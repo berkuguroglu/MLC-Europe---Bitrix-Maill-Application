@@ -1,25 +1,28 @@
 package Mail;
 
 import Database.databaseConnection;
-import com.mysql.cj.exceptions.PasswordExpiredException;
-import com.sun.mail.smtp.SMTPSendFailedException;
+import com.sun.mail.util.MailConnectException;
 import javafx.concurrent.Task;
+import javafx.concurrent.WorkerStateEvent;
+import javafx.event.EventHandler;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
 
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
 import javax.mail.*;
 import javax.mail.internet.*;
-import java.io.File;
-import java.net.URL;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
-import javax.activation.DataHandler;
 import javax.activation.DataSource;
-import javax.activation.FileDataSource;
 import javax.mail.BodyPart;
 import javax.mail.Message;
-import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
@@ -132,19 +135,43 @@ public class Mail extends Task<Void> {
                     }
                 });
                 Message m = this.prepareMessage(session, myAccountEmail, "it31@mlceurope.com", country);
-                System.out.println("Message sent succesfully");
                 Transport.send(m);
                 this.succeeded();
 
             }
-            catch (AuthenticationFailedException ex)
+            catch (AuthenticationFailedException | AddressException ex)
             {
+
+                System.out.println(myAccountEmail);
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error!");
+                alert.setHeaderText("Look, there is an error!");
+                alert.setContentText("Authenticatin failed for the user " + myAccountEmail + "\n Check it on ZOHO Control Panel.");
+                StringWriter sw = new StringWriter();
+                PrintWriter pw = new PrintWriter(sw);
+                ex.printStackTrace(pw);
+                String exceptionText = sw.toString();
+                Label label = new Label("The exception stacktrace was:");
+                TextArea textArea = new TextArea(exceptionText);
+                textArea.setEditable(false);
+                textArea.setWrapText(true);
+                textArea.setMaxWidth(Double.MAX_VALUE);
+                textArea.setMaxHeight(Double.MAX_VALUE);
+                GridPane.setVgrow(textArea, Priority.ALWAYS);
+                GridPane.setHgrow(textArea, Priority.ALWAYS);
+                GridPane expContent = new GridPane();
+                expContent.setMaxWidth(Double.MAX_VALUE);
+                expContent.add(label, 0, 0);
+                expContent.add(textArea, 0, 1);
+                alert.getDialogPane().setExpandableContent(expContent);
+                alert.show();
                 this.failed();
 
-            }
-            catch (AddressException ex)
+
+            } catch (Exception exception)
             {
-                ex.printStackTrace();
+                exception.printStackTrace();
+                System.out.println(myAccountEmail);
                 this.failed();
             }
 

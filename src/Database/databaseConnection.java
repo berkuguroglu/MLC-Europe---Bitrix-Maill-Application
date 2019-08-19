@@ -79,6 +79,37 @@ public class databaseConnection {
         new Thread(st).start();
         return st.get();
     }
+    public Task<Boolean> updateCompany(String id, String email, String state) throws ExecutionException, InterruptedException, SQLException {
+         Task<Boolean> task = new Task<Boolean>() {
+             @Override
+             protected Boolean call() throws Exception {
+
+                 if(!this.isDone())
+                 {
+                     Statement st = con.createStatement();
+                     String query = "UPDATE COMPANIES SET company_email = '" + email + "', state = '" + state + "' WHERE id = " + id;
+                     try {
+                         System.out.println(st.execute(query));
+                         con.close();
+
+                     }
+                     catch (SQLException ex)
+                     {
+                         ex.printStackTrace();
+                     }
+
+                     this.succeeded();
+                     return true;
+                 }
+                 else {
+                     this.failed();
+                     return false;
+                 }
+             }
+         };
+         new Thread(task).start();
+         return task;
+    }
     public Task<Boolean> getCompanies(String date, boolean state) throws ExecutionException, InterruptedException {
         if(state)
         {
