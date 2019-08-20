@@ -79,6 +79,24 @@ public class databaseConnection {
         new Thread(st).start();
         return st.get();
     }
+
+    public Task<Boolean> resetAllData() throws ExecutionException, InterruptedException {
+        Task<Boolean> task = new Task<Boolean>() {
+            @Override
+            protected Boolean call() throws Exception {
+
+                Statement st = con.createStatement();
+                String query = "DELETE FROM COMPANIES";
+                st.execute(query);
+                query = "UPDATE GENERAL_INFO SET iteration = 0";
+                st.execute(query);
+                con.close();
+                return true;
+            }
+        };
+        new Thread(task).start();
+        return task;
+    }
     public Task<Boolean> updateCompany(String id, String email, String state) throws ExecutionException, InterruptedException, SQLException {
          Task<Boolean> task = new Task<Boolean>() {
              @Override
@@ -91,7 +109,6 @@ public class databaseConnection {
                      try {
                          System.out.println(st.execute(query));
                          con.close();
-
                      }
                      catch (SQLException ex)
                      {

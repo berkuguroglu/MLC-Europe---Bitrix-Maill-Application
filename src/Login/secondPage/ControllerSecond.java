@@ -15,8 +15,6 @@ import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
@@ -29,7 +27,6 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
-import java.util.function.Consumer;
 
 public class ControllerSecond implements EventHandler<MouseEvent> {
 
@@ -46,6 +43,9 @@ public class ControllerSecond implements EventHandler<MouseEvent> {
 
     @FXML
     private TableView<Company> table;
+
+    @FXML
+    private Button reset;
 
     @FXML
     private TableColumn<Company, String> company_id;
@@ -101,6 +101,19 @@ public class ControllerSecond implements EventHandler<MouseEvent> {
         process.setOnMouseClicked(this);
         indicator.setVisible(false);
         bitrixbutton.setOnMouseClicked(this::bitrix);
+            reset.setOnMouseClicked(mouseEvent -> {
+                try {
+                    reset(mouseEvent);
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            });
+
+
+
+
         datepicker.setDayCellFactory(picker -> new DateCell() {
             public void updateItem(LocalDate date, boolean empty) {
                 super.updateItem(date, empty);
@@ -172,6 +185,28 @@ public class ControllerSecond implements EventHandler<MouseEvent> {
             }
         });
 
+
+    }
+
+    private void reset(MouseEvent mouseEvent) throws ExecutionException, InterruptedException {
+
+        Alert alertDialog = new Alert(Alert.AlertType.CONFIRMATION);
+        alertDialog.setTitle("Reset all the data!");
+        alertDialog.setHeaderText("Are you sure?");
+        alertDialog.setContentText("If you click 'OK', then all the data which has been stored on our database will be deleted.\nThe process could be started from the scratch by doing this.");
+        Optional<ButtonType> options = alertDialog.showAndWait();
+        if(options.isPresent() && (options.get() == ButtonType.OK))
+        {
+            databaseConnection db = new databaseConnection();
+            db.openConnection();
+            db.resetAllData().setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+                @Override
+                public void handle(WorkerStateEvent workerStateEvent) {
+                    Company.list.clear();
+                    table.refresh();
+                }
+            });
+        }
 
     }
 
@@ -269,7 +304,7 @@ public class ControllerSecond implements EventHandler<MouseEvent> {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                Dialog<HashMap<String, String>> d = new companyDialog(table.getSelectionModel().getSelectedItem().getID(), table.getSelectionModel().getSelectedItem().getCompanyName(), table.getSelectionModel().getSelectedItem().getResponsiblePerson(), table.getSelectionModel().getSelectedItem().getEmail(), table.getSelectionModel().getSelectedItem().getCountry(), table.getSelectionModel().getSelectedItem().getStater(), mails);
+                Dialog<HashMap<String, String>> d = new companyDialog(table.getSelectionModel().getSelectedItem().getID(), table.getSelectionModel().getSelectedItem().getCompanyName(), table.getSelectionModel().getSelectedItem().getResponsiblePerson(), table.getSelectionModel().getSelectedItem().getEmail(), table.getSelectionModel().getSelectedItem().getCountry(), table.getSelectionModel().getSelectedItem().getStater(), mails, table.getSelectionModel().getSelectedItem().getRespPersonID(), table);
                 d.setTitle("MLC Europe | Edit");
                 d.showAndWait();
                 if(!d.getResult().isEmpty()) {

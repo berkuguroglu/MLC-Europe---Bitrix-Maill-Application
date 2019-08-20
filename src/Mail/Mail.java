@@ -57,6 +57,7 @@ public class Mail extends Task<Void> {
         properties.put("mail.smtp.starttls.enable", "true");
         properties.put("mail.smtp.host", "smtp.zoho.com");
         properties.put("mail.smtp.port", "587");
+
         String[] result = findResp(this.responsiblePerson);
          if(result != null) {
 
@@ -110,7 +111,7 @@ public class Mail extends Task<Void> {
     {
         for(String[] iter : sales_team)
         {
-            if(Objects.equals(iter[0], String.valueOf(this.responsiblePerson)))
+            if(Objects.equals(iter[0], String.valueOf(person)))
                 return iter;
         }
         return null;
@@ -134,7 +135,7 @@ public class Mail extends Task<Void> {
                         return ps;
                     }
                 });
-                Message m = this.prepareMessage(session, myAccountEmail, "it31@mlceurope.com", country);
+                Message m = this.prepareMessage(session, myAccountEmail, recepient, country);
                 Transport.send(m);
                 this.succeeded();
 
@@ -206,6 +207,7 @@ public class Mail extends Task<Void> {
                     "Thank you. ");
         }
         public static void putTeam() throws InterruptedException, ExecutionException, SQLException {
+
             databaseConnection db = new Database.databaseConnection();
             db.openConnection();
             Mail.sales_team = db.getSalesTeam();
@@ -215,11 +217,10 @@ public class Mail extends Task<Void> {
 
         static String produceMessage(String name, String country, String recep, String myAccount)
         {
-            String[] split;
-            split = recep.split("@", 2);
+
             String result =
-            "Hello Mr/Ms " + split[0].toUpperCase() + ",\n\n"
-            + "Thank you for taking time to talk to me earlier. My name, once more, is " + name
+            "Hello, dear purchasing team,\n\n"
+            + "I would like to talk about the needs of electronic components within your organization. My name is " + name
             + content.get(country)
             +"\n\n"
             + name + "\n"

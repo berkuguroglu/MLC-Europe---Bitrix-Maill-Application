@@ -1,6 +1,7 @@
 package Login;
 
 import Login.Interfaces.DialogConnection;
+import Login.secondPage.Company;
 import Login.secondPage.detailController;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -9,6 +10,7 @@ import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
+import javafx.scene.control.TableView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
@@ -26,7 +28,7 @@ public class companyDialog extends Dialog<HashMap<String, String>> implements Di
     private ArrayList<String> mails = new ArrayList<>();
     private DialogConnection dg;
     private Boolean changes;
-    public companyDialog(String id, String name, String responsiblePerson, String email, String country, String state, ArrayList<String> mails) {
+    public companyDialog(String id, String name, String responsiblePerson, String email, String country, String state, ArrayList<String> mails, int respid, TableView<Company> table) {
 
 
                 try {
@@ -50,7 +52,7 @@ public class companyDialog extends Dialog<HashMap<String, String>> implements Di
                         @Override
                         public void run() {
                             detailController controller = loader.getController();
-                            controller.setLabel(name, responsiblePerson, email, country, mails, companyDialog.this);
+                            controller.setLabel(name, responsiblePerson, email, country, mails, companyDialog.this, respid, Integer.parseInt(id), table);
 
                         }
                     });

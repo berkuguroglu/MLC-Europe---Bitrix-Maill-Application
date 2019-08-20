@@ -75,7 +75,7 @@
                   <Insets top="25.0" />
                </padding>
             </HBox>
-            <Button mnemonicParsing="false" prefHeight="26.0" prefWidth="394.0" text="Send again">
+            <Button fx:id="sendEmail" mnemonicParsing="false" prefHeight="26.0" prefWidth="394.0" text="Send again">
                <VBox.margin>
                   <Insets top="20.0" />
                </VBox.margin>
