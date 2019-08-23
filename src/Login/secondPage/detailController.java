@@ -4,11 +4,8 @@ import Database.databaseConnection;
 import Login.Interfaces.DialogConnection;
 import Login.companyDialog;
 import Mail.Mail;
-import com.google.gson.JsonObject;
-import com.mysql.cj.xdevapi.Table;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -18,9 +15,7 @@ import javafx.scene.input.MouseEvent;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class detailController {
@@ -119,7 +114,8 @@ public class detailController {
                     Mail obj = null;
                     try {
                         Mail.Templates.putTeam();
-                        obj = new Mail(detailController.this.respid, detailController.this.email.getSelectionModel().getSelectedItem(), "English");
+                        Mail.process = null;
+                        obj = new Mail(detailController.this.respid, detailController.this.email.getSelectionModel().getSelectedItem(), "English", 0 , -1, null, null);
 
                     } catch (InterruptedException e) {
                         e.printStackTrace();

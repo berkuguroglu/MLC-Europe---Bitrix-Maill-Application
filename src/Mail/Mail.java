@@ -1,13 +1,9 @@
 package Mail;
 
 import Database.databaseConnection;
-import com.sun.mail.util.MailConnectException;
+import com.sun.mail.smtp.SMTPSendFailedException;
 import javafx.concurrent.Task;
-import javafx.concurrent.WorkerStateEvent;
-import javafx.event.EventHandler;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 
@@ -35,7 +31,7 @@ import javax.mail.internet.MimeMultipart;
 import static Mail.Mail.Templates.*;
 
 
-public class Mail extends Task<Void> {
+ public class Mail extends Task<Void> {
 
 
     private  Session session = null;
@@ -43,10 +39,15 @@ public class Mail extends Task<Void> {
     private Properties properties;
     private String country;
     private String salesname;
+    private int size, taskId;
+    public static Button process;
+    public static HashMap<Integer, ArrayList<Task<Void>>> queue = new HashMap<>();
     private int responsiblePerson;
     private static ArrayList<String[]> sales_team;
     private boolean allowed = false;
-    public Mail(int responsiblePerson, String recepient, String country) throws InterruptedException, ExecutionException, SQLException {
+    private String remove;
+    private ArrayList<String> dialog;
+    public Mail(int responsiblePerson, String recepient, String country, int size, int taskId, ArrayList<String> dialog, String remove) throws InterruptedException, ExecutionException, SQLException {
 
 
         this.responsiblePerson = responsiblePerson;
@@ -57,14 +58,18 @@ public class Mail extends Task<Void> {
         properties.put("mail.smtp.starttls.enable", "true");
         properties.put("mail.smtp.host", "smtp.zoho.com");
         properties.put("mail.smtp.port", "587");
-
         String[] result = findResp(this.responsiblePerson);
          if(result != null) {
 
              this.myAccountEmail = result[3];
              this.password = result[2];
              this.salesname = result[1];
+             this.size = size;
+             this.dialog = dialog;
+             this.remove = remove;
+             this.taskId = taskId;
              allowed = true;
+             System.out.println(this.size);
          }
 
     }
@@ -78,6 +83,7 @@ public class Mail extends Task<Void> {
             message.setSubject("MLC Europe");
 
             Multipart multipart = new MimeMultipart();
+
 
             String filename = getClass().getResource("MLC_Europe_GmbH_Catalog.pdf").getPath();
             String filetwo = getClass().getResource("MLC_Europe_GmbH_Line_Card.pdf").getPath();
@@ -124,9 +130,7 @@ public class Mail extends Task<Void> {
 
 
             Random r = new Random();
-            Thread.sleep(r.nextInt(300));
             System.out.println("Preparing to send email");
-            System.out.println(myAccountEmail + " " + recepient);
             try {
                 session = Session.getInstance(properties, new Authenticator() {
                     @Override
@@ -137,13 +141,24 @@ public class Mail extends Task<Void> {
                 });
                 Message m = this.prepareMessage(session, myAccountEmail, recepient, country);
                 Transport.send(m);
+                if(Mail.this.taskId != -1) {
+                    System.out.println(Mail.this.size + " " + Mail.queue.get(Mail.this.taskId).size());
+                    if (Mail.queue.get(Mail.this.taskId).size() == Mail.this.size) {
+                        System.out.println("Task completed");
+                        dialog.remove(remove);
+                    }
+                }
                 this.succeeded();
 
+            }
+            catch (SMTPSendFailedException ex)
+            {
+                ex.printStackTrace();
+                this.failed();
             }
             catch (AuthenticationFailedException | AddressException ex)
             {
 
-                System.out.println(myAccountEmail);
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Error!");
                 alert.setHeaderText("Look, there is an error!");
@@ -172,7 +187,6 @@ public class Mail extends Task<Void> {
             } catch (Exception exception)
             {
                 exception.printStackTrace();
-                System.out.println(myAccountEmail);
                 this.failed();
             }
 
@@ -190,21 +204,14 @@ public class Mail extends Task<Void> {
         {
             content.put("English", "\n" +
                     "\n" +
-                    "\n" +
-                    "\n" +
-                    "MLC Europe GmbH in Germany is an international distributor of hard to find and obsolete electronic components such as semiconductors, diodes, transistors, circuits, transformers, relays, connectors, etc. The parts we help procure can be electronic, electrical and mechanical in nature as well. Our vast supply chain of vendors ensures that any time your regular suppliers cannot deliver the requested quantity on time, we will be ready to help save the situation.\n" +
-                    "\n" +
-                    "\n" +
+                    "As you know, MLC Europe GmbH in Germany is an international distributor of LCDs, diodes, relays, connectors, etc. The parts we help procure can be electronic, electrical and mechanical in nature as well. Our vast supply chain of vendors ensures that any time your regular suppliers cannot deliver the requested quantity on time, we will be ready to help save the situation. \n" +
                     "\n" +
                     "All I require is the part number and quantity, and I will be happy to source these components for you.\n" +
-                    "We always rigorously test the components we procure on your behalf to ensure the authenticity and functionality of the parts and provide you with a guarantee of at least 45 days as well.\n" +
-                    "\n" +
-                    "\n" +
                     "\n" +
                     "Please do not hesitate to contact me in case of any questions, comments or requirements.\n" +
                     "\n" +
                     "\n" +
-                    "Thank you. ");
+                    "Thank you.\n\n");
         }
         public static void putTeam() throws InterruptedException, ExecutionException, SQLException {
 
@@ -218,12 +225,13 @@ public class Mail extends Task<Void> {
         static String produceMessage(String name, String country, String recep, String myAccount)
         {
 
+
             String result =
-            "Hello, dear purchasing team,\n\n"
-            + "I would like to talk about the needs of electronic components within your organization. My name is " + name
+            "Hello, \n\n"
+            + "I would like to talk about the needs of electronic components within your organization. My name is " + name.split("-", 5)[1].trim() + "."
             + content.get(country)
-            +"\n\n"
-            + name + "\n"
+            +"\n"
+            + name.split("-", 5)[1].trim() + "\n"
             + "International Sales Executive\n"
             + "MLC Europe GmbH\n\n\n"
             + "Tel:     +4961312109183\n"

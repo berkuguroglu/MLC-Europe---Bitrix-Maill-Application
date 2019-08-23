@@ -17,7 +17,7 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1400.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Login.secondPage.ControllerSecond">
    <children>
-      <TextField layoutX="549.0" layoutY="113.0" prefHeight="25.0" prefWidth="363.0" promptText="Search" />
+      <TextField fx:id="sf" layoutX="549.0" layoutY="113.0" prefHeight="26.0" prefWidth="286.0" promptText="Search by e-mail adress of the company" />
       <Button fx:id="reset" layoutX="1217.0" layoutY="110.0" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="30.0" prefWidth="96.0" style="-fx-background-color: #ff6961;" text="RESET" textFill="WHITE">
          <font>
             <Font name="Ebrima Bold" size="13.0" />
@@ -37,7 +37,7 @@
                                     <TableColumn fx:id="company_name" prefWidth="206.0" text="Company Name" />
                                     <TableColumn fx:id="country" prefWidth="142.0" text="Country" />
                                     <TableColumn fx:id="email" prefWidth="165.0" text="E-Mails" />
-                                    <TableColumn fx:id="resp" prefWidth="165.0" text="Resp. Person" />
+                                    <TableColumn fx:id="resp" prefWidth="300.0" text="Resp. Person" />
                                   <TableColumn fx:id="templates" prefWidth="121.0" text="Templates" />
                                     <TableColumn fx:id="sale" prefWidth="121.0" text="State" />
                                     <TableColumn fx:id="status" prefWidth="121.0" text="Status" />
@@ -70,5 +70,6 @@
          </image>
       </ImageView>
       <DatePicker fx:id="datepicker" layoutX="930.0" layoutY="114.0" promptText="Pick a date.." />
+      <Button fx:id="sb" layoutX="846.0" layoutY="114.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="67.0" style="-fx-border-radius: 100;" text="Search" />
    </children>
 </AnchorPane>
