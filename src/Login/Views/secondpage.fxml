@@ -15,9 +15,9 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1400.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Login.secondPage.ControllerSecond">
+<AnchorPane fx:id="mailsentcount" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1400.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Login.secondPage.ControllerSecond">
    <children>
-      <TextField fx:id="sf" layoutX="549.0" layoutY="113.0" prefHeight="26.0" prefWidth="286.0" promptText="Search by e-mail adress of the company" />
+      <TextField fx:id="sf" layoutX="549.0" layoutY="113.0" prefHeight="26.0" prefWidth="286.0" promptText="Search by e-mail address or company name of the company" />
       <Button fx:id="reset" layoutX="1217.0" layoutY="110.0" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="30.0" prefWidth="96.0" style="-fx-background-color: #ff6961;" text="RESET" textFill="WHITE">
          <font>
             <Font name="Ebrima Bold" size="13.0" />
@@ -71,5 +71,7 @@
       </ImageView>
       <DatePicker fx:id="datepicker" layoutX="930.0" layoutY="114.0" promptText="Pick a date.." />
       <Button fx:id="sb" layoutX="846.0" layoutY="114.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="67.0" style="-fx-border-radius: 100;" text="Search" />
+      <Label fx:id="sent" layoutX="1177.0" layoutY="47.0" text="Mail sent today:" />
+      <Button fx:id="stop" layoutX="615.0" layoutY="750.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="170.0" style="-fx-background-color: RED;" text="STOP THE PROCESS" textFill="WHITE" />
    </children>
 </AnchorPane>

@@ -97,7 +97,7 @@ public class detailController {
         {
             ArrayList<String> list_country = new ArrayList<>();
             list_country.add(country);
-            this.companyLabel.setText(companyName + " | " + responsiblePerson);
+            this.companyLabel.setText(companyName + " |\n" + responsiblePerson);
             this.email.setItems(FXCollections.observableList(mails));
             this.countries.setItems(FXCollections.observableList(list_country));
             this.parentDialog = companyDialog;

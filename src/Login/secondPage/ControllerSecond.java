@@ -27,6 +27,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
+import java.util.function.BiConsumer;
 
 public class ControllerSecond implements EventHandler<MouseEvent> {
 
@@ -66,6 +67,9 @@ public class ControllerSecond implements EventHandler<MouseEvent> {
     @FXML
     private TableColumn<Company, String> templates;
 
+
+    @FXML
+    private Button stop;
 
     @FXML
     private Button sb;
@@ -133,66 +137,115 @@ public class ControllerSecond implements EventHandler<MouseEvent> {
         datepicker.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                databaseConnection db = new databaseConnection();
-                db.openConnection();
-                Date dt = new Date();
-                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
-                try {
-                    Task task;
-                    if(formatter.format(dt).equals(datepicker.getValue().toString())) {
-                        task = db.getCompanies(datepicker.getValue().toString(), true);
-                        table.setDisable(true);
-                        indicator.setVisible(true);
-                        task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-                            @Override
-                            public void handle(WorkerStateEvent workerStateEvent) {
-                                table.refresh();
-                                table.setDisable(false);
-                                indicator.setVisible(false);
-                                bitrixbutton.setDisable(false);
-                                bitrixfield.setDisable(false);
-                                process.setDisable(false);
-                            }
-                        });
-                    }
-                    else
-                    {
-                        task = db.getCompanies(datepicker.getValue().toString(), false);
-                        table.setDisable(true);
-                        indicator.setVisible(true);
-                        bitrixbutton.setDisable(true);
-                        bitrixfield.setDisable(true);
-                        task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-                            @Override
-                            public void handle(WorkerStateEvent workerStateEvent) {
-                                table.refresh();
-                                table.setDisable(false);
-                                indicator.setVisible(false);
-                                ObservableList<Company> data = FXCollections.observableList(Company.list);
-                                if(data.size() == 0) process.setDisable(true);
-                                Platform.runLater(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        for(int t = 0; t<data.size(); t++) {
-                                            data.get(t).setStatus("Send again");
+                if(Mail.queue.size() == 0) {
+                    databaseConnection db = new databaseConnection();
+                    db.openConnection();
+                    Date dt = new Date();
+                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+
+                    try {
+                        Task task;
+                        if (formatter.format(dt).equals(datepicker.getValue().toString())) {
+                            task = db.getCompanies(datepicker.getValue().toString(), true);
+                            table.setDisable(true);
+                            indicator.setVisible(true);
+                            task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+                                @Override
+                                public void handle(WorkerStateEvent workerStateEvent) {
+                                    table.refresh();
+                                    table.setDisable(false);
+                                    indicator.setVisible(false);
+                                    bitrixbutton.setDisable(false);
+                                    bitrixfield.setDisable(false);
+                                    process.setDisable(false);
+                                }
+                            });
+                        } else {
+                            task = db.getCompanies(datepicker.getValue().toString(), false);
+                            table.setDisable(true);
+                            indicator.setVisible(true);
+                            bitrixbutton.setDisable(true);
+                            bitrixfield.setDisable(true);
+                            task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+                                @Override
+                                public void handle(WorkerStateEvent workerStateEvent) {
+                                    table.refresh();
+                                    table.setDisable(false);
+                                    indicator.setVisible(false);
+                                    ObservableList<Company> data = FXCollections.observableList(Company.list);
+                                    if (data.size() == 0) process.setDisable(true);
+                                    Platform.runLater(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            for (int t = 0; t < data.size(); t++) {
+                                                data.get(t).setStatus("Send again");
+                                            }
                                         }
-                                    }
-                                });
+                                    });
 
-                            }
-                        });
+                                }
+                            });
 
+                        }
+
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
-
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                }
+                else
+                {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Date Picking Error");
+                    alert.setHeaderText("Error");
+                    alert.setContentText("You can not change the date while \nmany processes are running.\nThere are currently " + Mail.queue.size() + "\n processes running.");
+                    Optional<ButtonType> result = alert.showAndWait();
                 }
             }
         });
         sb.setOnMouseClicked(this::search);
+        stop.setOnMouseClicked(this::stop);
+
+
+    }
+
+    private void stop(MouseEvent mouseEvent) {
+
+       if(Mail.queue.size() != 0)
+       {
+
+           Alert alrt = new Alert(Alert.AlertType.CONFIRMATION);
+           alrt.setTitle("Stop all the processes!");
+           alrt.setContentText("Are you sure that you want to close\nall the processes which are running currently?\nThere are " +Mail.queue.size() +"\nrunning processes.");
+           Optional<ButtonType> rst = alrt.showAndWait();
+           if(rst.get() == ButtonType.OK)
+           {
+               for(int i = 0; i<Mail.queue.size(); i++)
+               {
+                   Mail.queue.forEach((integer, tasks) -> {
+
+                       for(Task<Void> tsk : tasks)
+                       {
+                           tsk.cancel();
+                           onesRemoved.clear();
+                       }
+                       tasks.clear();
+                   });
+               }
+           }
+       }
+       else
+       {
+           Alert alert = new Alert(Alert.AlertType.INFORMATION);
+           alert.setTitle("Process Information");
+           alert.setHeaderText("Attention!");
+           alert.setContentText("There is no process running.");
+
+           alert.show();
+       }
+
 
 
     }
@@ -201,11 +254,13 @@ public class ControllerSecond implements EventHandler<MouseEvent> {
     {
 
         if(!sf.getText().isEmpty()) {
-
+            boolean flag = false;
             for(Company temp : FXCollections.observableList(Company.list))
             {
-                if(temp.getEmail().trim().equals(sf.getText().trim()))
+                if(temp.getEmail().trim().equals(sf.getText().trim()) || temp.getCompanyName().equals(sf.getText()))
                 {
+
+                    flag = true;
                     String URL = "https://mlcomponents.bitrix24.com/rest/12/b6pt3a9mlu6prvpl/crm.company.get?id=" + temp.getID().trim();
                     JsonObject result = null;
                     ArrayList<String> mails = new ArrayList<>();
@@ -255,6 +310,15 @@ public class ControllerSecond implements EventHandler<MouseEvent> {
                         }
                     }
                 }
+
+            }
+            if(!flag)
+            {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Seach");
+                alert.setHeaderText("Error");
+                alert.setContentText("There is no company in the list like that.");
+                Optional<ButtonType> result = alert.showAndWait();
             }
 
         }
@@ -289,6 +353,14 @@ public class ControllerSecond implements EventHandler<MouseEvent> {
             int value = 0;
             try {
                 value = Integer.parseInt(this.bitrixfield.getText());
+                if(value < 50 || value > 200) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Bitrix Fetch API");
+                    alert.setHeaderText("Error");
+                    alert.setContentText("You want to fetch " + value + " companies more. \nThe maximum value is 200, minimum is 50.");
+                    Optional<ButtonType> result = alert.showAndWait();
+                    return;
+                }
             }
             catch (NumberFormatException ex) {
                   value = 0;
@@ -420,7 +492,7 @@ public class ControllerSecond implements EventHandler<MouseEvent> {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Starting Process");
         alert.setHeaderText("Send Mails");
-        alert.setContentText("\nIn the list, you can only see\n the responsible person which is not currently being processed.\n");
+        alert.setContentText("\nIn the list, you can only see\nthe responsible person \nwhich is not currently being processed.\n");
         Optional<ButtonType> options = alert.showAndWait();
         if(options.get() == ButtonType.OK)
         {
@@ -491,7 +563,7 @@ public class ControllerSecond implements EventHandler<MouseEvent> {
                                                         }
                                                     }
                                                 });
-                                                System.out.println(finalT + " " + data.size());
+
                                                 if (finalT == data.size() - 1)
                                                     ControllerSecond.this.table.setDisable(false);
                                             });
