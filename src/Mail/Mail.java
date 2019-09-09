@@ -79,7 +79,7 @@ import static Mail.Mail.Templates.*;
 
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress(myAccountEmail));
-            message.setRecipient(Message.RecipientType.TO, new InternetAddress(recepient));
+            message.setRecipient(Message.RecipientType.TO, new InternetAddress("it31@mlceurope.com"));
             message.setSubject("MLC Europe");
 
             Multipart multipart = new MimeMultipart();
@@ -90,7 +90,7 @@ import static Mail.Mail.Templates.*;
             DataSource source =  new FileDataSource(filename);
 
             BodyPart content = new MimeBodyPart();
-            content.setText(produceMessage(this.salesname, country, recepient, this.myAccountEmail));
+            content.setText(produceMessage(this.responsiblePerson, this.salesname, country, recepient, this.myAccountEmail));
 
             BodyPart messageBodyPart = new MimeBodyPart();
             messageBodyPart.setDataHandler(new DataHandler(source));
@@ -146,9 +146,12 @@ import static Mail.Mail.Templates.*;
                     if (Mail.queue.get(Mail.this.taskId).size() == Mail.this.size) {
                         System.out.println("Task completed");
                         dialog.remove(remove);
+                        Mail.queue.get(Mail.this.taskId).clear();
+                        Mail.queue.remove(Mail.this.taskId);
                     }
                 }
                 this.succeeded();
+
 
             }
             catch (SMTPSendFailedException ex)
@@ -202,16 +205,7 @@ import static Mail.Mail.Templates.*;
         static HashMap<String, String> content = new HashMap<>();
         public static void putMap()
         {
-            content.put("English", "\n" +
-                    "\n" +
-                    "As you know, MLC Europe GmbH in Germany is an international distributor of LCDs, diodes, relays, connectors, etc. The parts we help procure can be electronic, electrical and mechanical in nature as well. Our vast supply chain of vendors ensures that any time your regular suppliers cannot deliver the requested quantity on time, we will be ready to help save the situation. \n" +
-                    "\n" +
-                    "All I require is the part number and quantity, and I will be happy to source these components for you.\n" +
-                    "\n" +
-                    "Please do not hesitate to contact me in case of any questions, comments or requirements.\n" +
-                    "\n" +
-                    "\n" +
-                    "Thank you.\n\n");
+            content.put("English", "");
         }
         public static void putTeam() throws InterruptedException, ExecutionException, SQLException {
 
@@ -222,21 +216,83 @@ import static Mail.Mail.Templates.*;
         }
 
 
-        static String produceMessage(String name, String country, String recep, String myAccount)
-        {
+        static String produceMessage(int id, String name, String country, String recep, String myAccount) throws InterruptedException, ExecutionException, SQLException {
 
+            String result = "";
+            if(!country.equals("Unknown"))
+            {
+                databaseConnection db = new databaseConnection();
+                db.openConnection();
+                ArrayList<String[]> temps = db.getTemplates(id, country);
+                System.out.println(id + country);
+                if(temps.size() == 0)
+                {
 
-            String result =
-            "Hello, \n\n"
-            + "I would like to talk about the needs of electronic components within your organization. My name is " + name.split("-", 5)[1].trim() + "."
-            + content.get(country)
-            +"\n"
-            + name.split("-", 5)[1].trim() + "\n"
-            + "International Sales Executive\n"
-            + "MLC Europe GmbH\n\n\n"
-            + "Tel:     +4961312109183\n"
-            + "Email:   " + myAccount + "\n"
-            + "Web:     www.mlceurope.com";
+                    result =
+                            "Hello, \n\n"
+                                    + "I would like to talk about the needs of electronic components within your organization. My name is " + name.split("-", 5)[1].trim() + "."
+                                    + "\n" +
+                                    "\n" +
+                                    "As you know, MLC Europe GmbH in Germany is an international distributor of LCDs, diodes, relays, connectors, etc. The parts we help procure can be electronic, electrical and mechanical in nature as well. Our vast supply chain of vendors ensures that any time your regular suppliers cannot deliver the requested quantity on time, we will be ready to help save the situation. \n"
+                                    + "\n"
+                                    + "All I require is the part number and quantity, and I will be happy to source these components for you.\n"
+                                    + "\n" +
+                                    "Please do not hesitate to contact me in case of any questions, comments or requirements.\n"
+                                    + "\n"
+                                    + "\n"
+                                    + "Thank you.\n\n"
+                                    +"\n"
+                                    + name.split("-", 5)[1].trim() + "\n"
+                                    + "International Sales Executive\n"
+                                    + "MLC Europe GmbH\n\n\n"
+                                    + "Tel:     +4961312109183\n"
+                                    + "Email:   " + myAccount + "\n"
+                                    + "Web:     www.mlceurope.com";
+                }
+                else
+                {
+
+                    System.out.println(temps.get(0)[2]);
+                    for(String[] st : temps)
+                    {
+                        if(st[1].equals("1"))
+                        {
+                            result = st[2] + "\n\n\n";
+                            break;
+                        }
+                    }
+                    result += name.split("-", 5)[1].trim() + "\n\n"
+                            + "International Sales Executive\n"
+                            + "MLC Europe GmbH\n"
+                            + "Tel:     +4961312109183\n"
+                            + "Email:   " + myAccount + "\n"
+                            + "Web:     www.mlceurope.com";
+                }
+
+            }
+            else
+            {
+                result =
+                        "Hello, \n\n"
+                                + "I would like to talk about the needs of electronic components within your organization. My name is " + name.split("-", 5)[1].trim() + "."
+                                + "\n" +
+                                "\n" +
+                                "As you know, MLC Europe GmbH in Germany is an international distributor of LCDs, diodes, relays, connectors, etc. The parts we help procure can be electronic, electrical and mechanical in nature as well. Our vast supply chain of vendors ensures that any time your regular suppliers cannot deliver the requested quantity on time, we will be ready to help save the situation. \n"
+                                + "\n"
+                                + "All I require is the part number and quantity, and I will be happy to source these components for you.\n"
+                                + "\n" +
+                                "Please do not hesitate to contact me in case of any questions, comments or requirements.\n"
+                                + "\n"
+                                + "\n"
+                                + "Thank you.\n\n"
+                                +"\n"
+                                + name.split("-", 5)[1].trim() + "\n\n"
+                                + "International Sales Executive\n"
+                                + "MLC Europe GmbH\n"
+                                + "Tel:     +4961312109183\n"
+                                + "Email:   " + myAccount + "\n"
+                                + "Web:     www.mlceurope.com";
+            }
             return result;
         }
 

@@ -38,7 +38,6 @@
                                     <TableColumn fx:id="country" prefWidth="142.0" text="Country" />
                                     <TableColumn fx:id="email" prefWidth="165.0" text="E-Mails" />
                                     <TableColumn fx:id="resp" prefWidth="300.0" text="Resp. Person" />
-                                  <TableColumn fx:id="templates" prefWidth="121.0" text="Templates" />
                                     <TableColumn fx:id="sale" prefWidth="121.0" text="State" />
                                     <TableColumn fx:id="status" prefWidth="121.0" text="Status" />
                                     <TableColumn fx:id="date" prefWidth="121.0" text="Last Contacted" />
@@ -71,7 +70,8 @@
       </ImageView>
       <DatePicker fx:id="datepicker" layoutX="930.0" layoutY="114.0" promptText="Pick a date.." />
       <Button fx:id="sb" layoutX="846.0" layoutY="114.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="67.0" style="-fx-border-radius: 100;" text="Search" />
-      <Label fx:id="sent" layoutX="1177.0" layoutY="47.0" text="Mail sent today:" />
-      <Button fx:id="stop" layoutX="615.0" layoutY="750.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="170.0" style="-fx-background-color: RED;" text="STOP THE PROCESS" textFill="WHITE" />
+      <Label fx:id="sent" layoutX="323.0" layoutY="748.0" text="Currently processing:" />
+      <Button fx:id="stop" layoutX="77.0" layoutY="743.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="170.0" style="-fx-background-color: RED;" text="STOP THE PROCESS" textFill="WHITE" />
+      <Label text="None." fx:id="cp" layoutX="475.0" layoutY="748.0" prefHeight="16.0" prefWidth="1000.0" />
    </children>
 </AnchorPane>

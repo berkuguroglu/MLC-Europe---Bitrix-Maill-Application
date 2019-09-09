@@ -1,5 +1,6 @@
 package Login;
 
+import Database.databaseConnection;
 import Login.Interfaces.DialogConnection;
 import Login.secondPage.Company;
 import Login.secondPage.detailController;
@@ -17,8 +18,10 @@ import javafx.util.Callback;
 
 import java.io.IOException;
 import java.lang.reflect.Array;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.ExecutionException;
 
 public class companyDialog extends Dialog<HashMap<String, String>> implements DialogConnection {
 
@@ -51,8 +54,20 @@ public class companyDialog extends Dialog<HashMap<String, String>> implements Di
                     Platform.runLater(new Runnable() {
                         @Override
                         public void run() {
+                            ArrayList<String[]> templates = new ArrayList<>();
                             detailController controller = loader.getController();
-                            controller.setLabel(name, responsiblePerson, email, country, mails, companyDialog.this, respid, Integer.parseInt(id), table);
+                            databaseConnection db = new databaseConnection();
+                            db.openConnection();
+                            try {
+                                templates = db.getTemplates(respid, country);
+                            } catch (ExecutionException e) {
+                                e.printStackTrace();
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            } catch (SQLException e) {
+                                e.printStackTrace();
+                            }
+                            controller.setLabel(templates, name, responsiblePerson, email, country, mails, companyDialog.this, respid, Integer.parseInt(id), table);
 
                         }
                     });
@@ -99,4 +114,5 @@ public class companyDialog extends Dialog<HashMap<String, String>> implements Di
         }
 
     }
+
 }

@@ -16,6 +16,8 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class detailController {
@@ -38,6 +40,19 @@ public class detailController {
 
        @FXML
        private ComboBox<String> countries;
+       ;
+
+       @FXML
+       private TextArea content;
+
+       @FXML
+       private TextField title;
+
+       @FXML
+       private ComboBox<String> templates;
+
+       @FXML
+       private Button editbutton;
 
        private companyDialog parentDialog;
        private int respid;
@@ -45,7 +60,7 @@ public class detailController {
        private TableView table;
 
 
-    @FXML
+        @FXML
         public void initialize()
         {
 
@@ -89,17 +104,40 @@ public class detailController {
                     dg.changeEmail(email.getSelectionModel().getSelectedItem().toLowerCase());
                 }
             });
+            this.content.setDisable(true);
+            this.title.setDisable(true);
+            this.editbutton.setOnMouseClicked(this::editbutton);
+
 
 
         }
 
-        public void setLabel(String companyName, String responsiblePerson, String email, String country, ArrayList<String> mails, companyDialog companyDialog, int rasped, int compid, TableView<Company> table)
+    private void editbutton(MouseEvent mouseEvent) {
+
+          if(this.editbutton.getText().equals("Edit")) {
+              this.editbutton.setText("Save");
+              this.content.setDisable(false);
+              this.title.setDisable(false);
+              this.content.setVisible(false);
+              this.content.setVisible(true);
+              this.title.setVisible(false);
+              this.title.setVisible(true);
+          }
+
+    }
+
+    public void setLabel(ArrayList<String[]> templates, String companyName, String responsiblePerson, String email, String country, ArrayList<String> mails, companyDialog companyDialog, int rasped, int compid, TableView<Company> table)
         {
             ArrayList<String> list_country = new ArrayList<>();
+            ArrayList<String> list_of_titles = new ArrayList<>();
+            for(String[] iter : templates) {
+                list_of_titles.add(iter[4]);
+            }
             list_country.add(country);
-            this.companyLabel.setText(companyName + " |\n" + responsiblePerson);
+            this.companyLabel.setText(companyName + " | " + responsiblePerson);
             this.email.setItems(FXCollections.observableList(mails));
             this.countries.setItems(FXCollections.observableList(list_country));
+            this.templates.setItems(FXCollections.observableList(list_of_titles));
             this.parentDialog = companyDialog;
             this.email.getSelectionModel().select(email);
             this.countries.getSelectionModel().selectFirst();

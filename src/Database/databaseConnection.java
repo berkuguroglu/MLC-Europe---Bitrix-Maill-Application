@@ -97,6 +97,30 @@ public class databaseConnection {
         new Thread(task).start();
         return task;
     }
+    public ArrayList<String[]> getTemplates(int id, String country) throws ExecutionException, InterruptedException, SQLException {
+        Task<ArrayList<String[]>> st = new Task<ArrayList<String[]>>() {
+            @Override
+            protected ArrayList<String[]> call() throws Exception {
+                ArrayList<String[]> lst = new ArrayList<>();
+
+                String query;
+                if (!this.isDone()) {
+
+                    query = "SELECT * FROM TEMPLATES WHERE bitrixid='"+id+"' AND country='"+country+"'";
+                    rs = databaseConnection.this.st.executeQuery(query);
+                    while (rs.next()) {
+                        String[] str = {String.valueOf(rs.getInt("id")), String.valueOf(rs.getInt("defaulttemp")), rs.getString("template"), rs.getString("country"), rs.getString("title")};
+                        lst.add(str);
+                    }
+                }
+                this.done();
+                //databaseConnection.this.con.close();
+                return lst;
+            }
+        };
+        new Thread(st).start();
+        return st.get();
+    }
     public Task<Boolean> updateCompany(String id, String email, String state) throws ExecutionException, InterruptedException, SQLException {
          Task<Boolean> task = new Task<Boolean>() {
              @Override
@@ -149,7 +173,6 @@ public class databaseConnection {
                                 hashMap.put("status", rst.getString("status"));
                                 hashMap.put("company_email", rst.getString("company_email"));
                                 hashMap.put("state", rst.getString("state"));
-                                hashMap.put("templates", rst.getString("templates"));
                                 hashMap.put("lastcontacted", rst.getString("lastcontacted"));
                                 new Company(rst.getInt("id"), rst.getString("company_name"), Integer.parseInt(rst.getString("responsible_person")), getSalesTeam(), rst.getString("company_email"), rst.getString("state"), rst.getString("status"), rst.getString("lastcontacted"), rst.getString("country"));
 
@@ -189,7 +212,6 @@ public class databaseConnection {
                                 hashMap.put("status", rst.getString("status"));
                                 hashMap.put("company_email", rst.getString("company_email"));
                                 hashMap.put("state", rst.getString("state"));
-                                hashMap.put("templates", rst.getString("templates"));
                                 hashMap.put("lastcontacted", rst.getString("lastcontacted"));
                                 new Company(rst.getInt("id"), rst.getString("company_name"), Integer.parseInt(rst.getString("responsible_person")), getSalesTeam(), rst.getString("company_email"), rst.getString("state"), rst.getString("status"), rst.getString("lastcontacted"), rst.getString("country"));
 
@@ -241,8 +263,8 @@ public class databaseConnection {
             protected Integer call() throws Exception {
 
                 if(!this.isDone()) {
-                    String query = "INSERT INTO COMPANIES (id, company_name, responsible_person, country, status, company_email, state, templates) VALUES('"
-                            + id + "', '" + company_name + "', '" + responsible_person + "', '" + country + "', '" + status + "', '" + company_email + "', '" + state + "', '" + templates + "')";
+                    String query = "INSERT INTO COMPANIES (id, company_name, responsible_person, country, status, company_email, state) VALUES('"
+                            + id + "', '" + company_name + "', '" + responsible_person + "', '" + country + "', '" + status + "', '" + company_email + "', '" + state + "')";
                     try {
                         databaseConnection.this.st.execute(query);
 

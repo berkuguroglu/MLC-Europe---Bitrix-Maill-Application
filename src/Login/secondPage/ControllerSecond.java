@@ -94,6 +94,8 @@ public class ControllerSecond implements EventHandler<MouseEvent> {
 
     @FXML private DatePicker datepicker;
 
+    @FXML private Label cp;
+
 
     ArrayList<String> onesRemoved = new ArrayList<>();
 
@@ -107,7 +109,6 @@ public class ControllerSecond implements EventHandler<MouseEvent> {
         columns.add(resp);
         columns.add(email);
         columns.add(country);
-        columns.add(templates);
         columns.add(status);
         columns.add(sale);
         process.setOnMouseClicked(this);
@@ -200,7 +201,7 @@ public class ControllerSecond implements EventHandler<MouseEvent> {
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setTitle("Date Picking Error");
                     alert.setHeaderText("Error");
-                    alert.setContentText("You can not change the date while \nmany processes are running.\nThere are currently " + Mail.queue.size() + "\n processes running.");
+                    alert.setContentText("You can not change the date.\nMay the processes are running.\nThere are currently " + Mail.queue.size() + "\nprocesses running.");
                     Optional<ButtonType> result = alert.showAndWait();
                 }
             }
@@ -230,9 +231,12 @@ public class ControllerSecond implements EventHandler<MouseEvent> {
                        {
                            tsk.cancel();
                            onesRemoved.clear();
+
                        }
+                       cp.setText("Stopped.");
                        tasks.clear();
                    });
+                   Mail.queue.clear();
                }
            }
        }
@@ -541,8 +545,14 @@ public class ControllerSecond implements EventHandler<MouseEvent> {
                                             Mail obj = new Mail(data.get(t).getRespPersonID(), data.get(t).getEmail(), "English", size, ct, onesRemoved, remove);
                                             Mail.queue.get(ct).add(obj);
                                             int finalT = t;
+                                            int finalSize = size;
                                             obj.setOnSucceeded(workerStateEvent -> {
                                                 // sent.setText(String.valueOf(Integer.parseInt(sent.getText().trim().split(":", 2)[1]) + 1));
+                                                if(Mail.queue.get(ct) != null)
+                                                cp.setText(data.get(finalT).getResponsiblePerson() + " | " + data.get(finalT).getEmail() + " | " + finalSize +" / " + Mail.queue.get(ct).size());
+                                                else
+                                                cp.setText("One of tasks is done. There are still " + Mail.queue.size() + " tasks running.");
+
                                                 data.get(finalT).setStatus("Sent");
                                                 Date dt = new Date();
                                                 SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
@@ -564,8 +574,9 @@ public class ControllerSecond implements EventHandler<MouseEvent> {
                                                     }
                                                 });
 
-                                                if (finalT == data.size() - 1)
+                                                if (finalT == data.size() - 1) {
                                                     ControllerSecond.this.table.setDisable(false);
+                                                }
                                             });
                                             obj.setOnRunning(workerStateEvent -> {
 

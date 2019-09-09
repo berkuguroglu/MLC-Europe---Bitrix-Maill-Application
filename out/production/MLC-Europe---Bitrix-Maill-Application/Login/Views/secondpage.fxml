@@ -38,7 +38,6 @@
                                     <TableColumn fx:id="country" prefWidth="142.0" text="Country" />
                                     <TableColumn fx:id="email" prefWidth="171.0" text="E-Mails" />
                                     <TableColumn fx:id="resp" prefWidth="219.0" text="Responsible Person" />
-                                  <TableColumn fx:id="templates" prefWidth="121.0" text="Templates" />
                                     <TableColumn fx:id="templates2" prefWidth="121.0" text="Status" />
                                 </columns>
                                  <columnResizePolicy>
