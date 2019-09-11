@@ -54,7 +54,7 @@ public class Main extends Application implements Login.Interfaces.LoginConnectio
       FXMLLoader secondPageLoader = new FXMLLoader(getClass().getResource("Views/secondpage.fxml"));
       Parent secondPage = secondPageLoader.load();
       Stage secondStage = new Stage();
-      secondStage.setTitle("MLC Europe - CRM | Mail Application");
+      secondStage.setTitle("MLC Europe - CRM | Login.Mail Application");
       secondStage.setResizable(false);
       secondStage.setScene(new Scene(secondPage, secondStage.getWidth(), secondStage.getHeight()));
       ControllerSecond cont = secondPageLoader.getController();

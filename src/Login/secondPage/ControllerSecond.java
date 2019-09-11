@@ -3,7 +3,7 @@ package Login.secondPage;
 import Database.databaseConnection;
 import Login.Bitrix.fetchAPI;
 import Login.companyDialog;
-import Mail.Mail;
+import Login.Mail.Mail;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -18,7 +18,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
-import restRequest.request;
+import Login.restRequest.request;
 
 import java.io.IOException;
 import java.net.URL;
@@ -27,7 +27,6 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
-import java.util.function.BiConsumer;
 
 public class ControllerSecond implements EventHandler<MouseEvent> {
 
@@ -155,6 +154,7 @@ public class ControllerSecond implements EventHandler<MouseEvent> {
                                 @Override
                                 public void handle(WorkerStateEvent workerStateEvent) {
                                     table.refresh();
+                                    count.setText("Companies on the list: " + Company.list.size());
                                     table.setDisable(false);
                                     indicator.setVisible(false);
                                     bitrixbutton.setDisable(false);
@@ -426,10 +426,22 @@ public class ControllerSecond implements EventHandler<MouseEvent> {
         sale.setCellValueFactory(new PropertyValueFactory<Company, String>("stater"));
         status.setCellValueFactory(new PropertyValueFactory<Company, String>("status"));
         date.setCellValueFactory(new PropertyValueFactory<Company, String>("date"));
+        company_name.setSortable(false);
+        resp.setSortable(false);
+        company_id.setSortable(false);
+        country.setSortable(false);
+        email.setSortable(false);
+        sale.setSortable(false);
+        status.setSortable(false);
+        date.setSortable(false);
+        company_name.setSortable(false);
+        company_name.setReorderable(false);
+        resp.setReorderable(false);
+        company_id.setReorderable(false);
 
 
         table.setItems(data);
-        count.setText("Companies processing: " + Company.list.size());
+        count.setText("Companies processed: " + Company.list.size());
         table.setOnMouseClicked(mouseEvent -> {
             if(mouseEvent.getClickCount() == 2 && table.getSelectionModel().getSelectedItem() != null)
             {
@@ -604,7 +616,7 @@ public class ControllerSecond implements EventHandler<MouseEvent> {
                             for(int thread = 0; thread<Mail.queue.get(ct).size(); thread++)
                             {
                                 new Thread(Mail.queue.get(ct).get(thread)).start();
-                                Thread.sleep(30000);
+                                Thread.sleep(8000);
 
                             }
                             if(Mail.queue.get(currentTask).size() == 0)

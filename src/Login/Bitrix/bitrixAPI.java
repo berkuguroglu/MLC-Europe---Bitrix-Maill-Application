@@ -5,7 +5,7 @@ import Login.Main;
 import Login.secondPage.Company;
 import com.google.gson.*;
 import javafx.concurrent.Task;
-import restRequest.request;
+import Login.restRequest.request;
 
 import java.io.IOException;
 import java.sql.SQLException;

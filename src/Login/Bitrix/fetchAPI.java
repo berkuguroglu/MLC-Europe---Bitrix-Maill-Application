@@ -4,15 +4,13 @@ import Login.Main;
 import Login.secondPage.Company;
 import com.google.gson.*;
 import javafx.concurrent.Task;
-import restRequest.request;
+import Login.restRequest.request;
 
 import java.io.IOException;
-import java.sql.Array;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 
 public class fetchAPI extends Task<ArrayList<String>> {

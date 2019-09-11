@@ -3,7 +3,7 @@ package Login.secondPage;
 import Database.databaseConnection;
 import Login.Interfaces.DialogConnection;
 import Login.companyDialog;
-import Mail.Mail;
+import Login.Mail.Mail;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -16,8 +16,6 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class detailController {
@@ -116,12 +114,12 @@ public class detailController {
 
           if(this.editbutton.getText().equals("Edit")) {
               this.editbutton.setText("Save");
-              this.content.setDisable(false);
-              this.title.setDisable(false);
               this.content.setVisible(false);
               this.content.setVisible(true);
               this.title.setVisible(false);
               this.title.setVisible(true);
+              this.content.setDisable(false);
+              this.title.setDisable(false);
           }
 
     }
@@ -137,10 +135,18 @@ public class detailController {
             this.companyLabel.setText(companyName + " | " + responsiblePerson);
             this.email.setItems(FXCollections.observableList(mails));
             this.countries.setItems(FXCollections.observableList(list_country));
+            if(FXCollections.observableList(list_of_titles).size() != 0)
             this.templates.setItems(FXCollections.observableList(list_of_titles));
+            else
+            {
+                ArrayList<String> ars = new ArrayList<>();
+                ars.add("Default English to All");
+                this.templates.setItems(FXCollections.observableList(ars));
+            }
             this.parentDialog = companyDialog;
             this.email.getSelectionModel().select(email);
             this.countries.getSelectionModel().selectFirst();
+            this.templates.getSelectionModel().selectFirst();
             this.respid = rasped;
             System.out.println(rasped);
             this.compid = compid;
@@ -153,7 +159,7 @@ public class detailController {
                     try {
                         Mail.Templates.putTeam();
                         Mail.process = null;
-                        obj = new Mail(detailController.this.respid, detailController.this.email.getSelectionModel().getSelectedItem(), "English", 0 , -1, null, null);
+                        obj = new Mail(detailController.this.respid, detailController.this.email.getSelectionModel().getSelectedItem(), detailController.this.countries.getSelectionModel().getSelectedItem(), 0 , -1, null, null);
 
                     } catch (InterruptedException e) {
                         e.printStackTrace();
@@ -165,7 +171,9 @@ public class detailController {
                     obj.setOnSucceeded(workerStateEvent -> {
                         Company temp = Company.find(compid);
                         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                        alert.setTitle("Mail sent!");
+                        alert.setTitle("Information");
+                        alert.setContentText("Login.Mail sent!");
+                        alert.show();
                         temp.setStatus("Sent");
                         table.refresh();
                         Date dt = new Date();
@@ -186,6 +194,16 @@ public class detailController {
                                 }
                             }
                         });
+                    });
+                    obj.setOnFailed(workerStateEvent -> {
+                        Company temp = Company.find(compid);
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("Login.Mail sent!");
+                        alert.setContentText("There was an error while sending the mail.\nIt may be caused because of Unusual Sending Activity\nerror, contact the ZOHO Support.");
+                        temp.setStatus("Failed");
+                        table.refresh();
+                        alert.show();
+
                     });
                     new Thread(obj).start();
 
