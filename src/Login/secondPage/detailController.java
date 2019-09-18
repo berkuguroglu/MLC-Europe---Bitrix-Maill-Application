@@ -15,6 +15,8 @@ import javafx.scene.input.MouseEvent;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.concurrent.ExecutionException;
 
@@ -56,6 +58,9 @@ public class detailController {
        private int respid;
        private int compid;
        private TableView table;
+
+       private String[] cnts= {"Germany", "United Kingdom", "Italy", "Spain", "Finland", "Hungary", "China", "Turkey", "Austria", "France", "Portugal",
+               "Malta", "Sweden", "Norway", "Denmark", "Chezch", "Poland", "Bulgaria", "Maleysia", "Greece", "Canada"};
 
 
         @FXML
@@ -102,6 +107,13 @@ public class detailController {
                     dg.changeEmail(email.getSelectionModel().getSelectedItem().toLowerCase());
                 }
             });
+            countries.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                     DialogConnection dg = parentDialog;
+                     dg.changeCountry(countries.getSelectionModel().getSelectedItem().trim());
+                }
+            });
             this.content.setDisable(true);
             this.title.setDisable(true);
             this.editbutton.setOnMouseClicked(this::editbutton);
@@ -132,6 +144,7 @@ public class detailController {
                 list_of_titles.add(iter[4]);
             }
             list_country.add(country);
+            list_country.addAll(Arrays.asList(cnts));
             this.companyLabel.setText(companyName + " | " + responsiblePerson);
             this.email.setItems(FXCollections.observableList(mails));
             this.countries.setItems(FXCollections.observableList(list_country));

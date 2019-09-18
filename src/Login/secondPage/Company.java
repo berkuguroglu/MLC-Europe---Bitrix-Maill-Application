@@ -25,6 +25,7 @@ public class Company
    private SimpleStringProperty stater;
    private SimpleStringProperty status;
    private SimpleStringProperty date;
+   private SimpleStringProperty phoneNumber;
    private int respPersonID;
    public Company(int ID, String company_name, int responsible_person, String phone_number, JsonArray email, ArrayList<String[]> data, String state, String status, boolean newone, String date) throws IOException {
 
@@ -36,6 +37,7 @@ public class Company
        this.stater = new SimpleStringProperty(state);
        this.date = new SimpleStringProperty(date);
        this.mails = new ArrayList<>();
+       this.phoneNumber = new SimpleStringProperty(phone_number);
 
 
        if(email != null)
@@ -66,7 +68,7 @@ public class Company
                            try {
                                databaseConnection db = new databaseConnection();
                                db.openConnection();
-                               db.saveCompanies(Integer.parseInt(Company.this.getID()), Company.this.getCompanyName(), String.valueOf(Company.this.respPersonID), Company.this.getCountry(), Company.this.getStater(), Company.this.getStatus(), email.get(0).getAsJsonObject().get("VALUE").getAsString(), "Template");
+                               db.saveCompanies(Integer.parseInt(Company.this.getID()), Company.this.getCompanyName(), String.valueOf(Company.this.respPersonID), Company.this.getCountry(), Company.this.getStater(), Company.this.getStatus(), email.get(0).getAsJsonObject().get("VALUE").getAsString(), "Template", Company.this.getPhoneNumber());
                            } catch (ExecutionException e) {
                                e.printStackTrace();
                            } catch (InterruptedException e) {
@@ -85,7 +87,7 @@ public class Company
        setCountry(country_codes.getOrDefault(result[0], "Unknown"));
 
    }
-    public Company(int ID, String company_name, int responsible_person, ArrayList<String[]> data, String email, String state, String status, String date, String country) throws IOException {
+    public Company(int ID, String company_name, int responsible_person, ArrayList<String[]> data, String email, String state, String status, String date, String country, String phone) throws IOException {
 
         this.ID = new SimpleStringProperty(String.valueOf(ID));
         this.companyName = new SimpleStringProperty(company_name);
@@ -97,6 +99,7 @@ public class Company
         this.email = new SimpleStringProperty(email);
         this.country = new SimpleStringProperty(country);
         this.mails = new ArrayList<>();
+        this.phoneNumber = new SimpleStringProperty(phone);
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
@@ -158,6 +161,8 @@ public class Company
    {
        return this.email.get();
    }
+   public String getPhoneNumber(){ return this.phoneNumber.get();}
+   public void setPhoneNumber(String value) {this.phoneNumber = new SimpleStringProperty(value);}
    public int getRespPersonID() {return this.respPersonID; }
    public ArrayList<String> getMails() { return this.mails; }
 
@@ -169,11 +174,12 @@ public class Company
        country_codes.put("+33", "France");
        country_codes.put("+30", "Greece");
        country_codes.put("+1", "USA or Canada");
-       country_codes.put("+1", "Bulgaria");
+       country_codes.put("+359", "Bulgaria");
        country_codes.put("+46", "Sweden");
        country_codes.put("+31", "Netherlands");
        country_codes.put("+44", "United Kingdom");
        country_codes.put("+43", "Austria");
+       country_codes.put("+358", "Finland");
 
    }
    public static Company find(int id)

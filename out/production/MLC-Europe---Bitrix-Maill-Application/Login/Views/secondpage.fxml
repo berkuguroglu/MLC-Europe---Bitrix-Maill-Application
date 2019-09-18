@@ -15,7 +15,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="mailsentcount" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1400.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Login.secondPage.ControllerSecond">
+<AnchorPane prefHeight="685.0" prefWidth="1405.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Login.secondPage.ControllerSecond">
    <children>
       <TextField fx:id="sf" layoutX="549.0" layoutY="113.0" prefHeight="26.0" prefWidth="286.0" promptText="Search by e-mail address or company name of the company" />
       <Button fx:id="reset" layoutX="1217.0" layoutY="110.0" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="30.0" prefWidth="96.0" style="-fx-background-color: #ff6961;" text="RESET" textFill="WHITE">
@@ -23,15 +23,15 @@
             <Font name="Ebrima Bold" size="13.0" />
          </font>
       </Button>
-      <TabPane layoutX="40.0" layoutY="153.0" prefHeight="573.0" prefWidth="1319.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 3; -fx-border-color: #111111;" tabClosingPolicy="UNAVAILABLE">
+      <TabPane layoutX="41.0" layoutY="159.0" prefHeight="438.0" prefWidth="1324.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 3; -fx-border-color: #111111;" tabClosingPolicy="UNAVAILABLE">
         <tabs>
           <Tab text="Companies">
             <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="543.0" prefWidth="1302.0">
+              <AnchorPane minHeight="0.0" minWidth="0.0">
                      <children>
-                        <HBox alignment="CENTER" prefHeight="538.0" prefWidth="1319.0">
+                        <HBox alignment="CENTER" prefHeight="404.0" prefWidth="1319.0">
                            <children>
-                              <TableView fx:id="table" prefHeight="538.0" prefWidth="1346.0">
+                              <TableView fx:id="table" prefHeight="538.0" prefWidth="1351.0">
                                 <columns>
                                     <TableColumn fx:id="company_id" prefWidth="140.0" text="Company ID" />
                                     <TableColumn fx:id="company_name" prefWidth="206.0" text="Company Name" />
@@ -40,6 +40,7 @@
                                     <TableColumn fx:id="resp" prefWidth="300.0" text="Resp. Person" />
                                     <TableColumn fx:id="sale" prefWidth="121.0" text="State" />
                                     <TableColumn fx:id="status" prefWidth="121.0" text="Status" />
+                                    <TableColumn fx:id="phone_number" prefWidth="121.0" text="Phone Number" />
                                     <TableColumn fx:id="date" prefWidth="121.0" text="Last Contacted" />
                                 </columns>
                                  <columnResizePolicy>
@@ -70,8 +71,8 @@
       </ImageView>
       <DatePicker fx:id="datepicker" layoutX="930.0" layoutY="114.0" promptText="Pick a date.." />
       <Button fx:id="sb" layoutX="846.0" layoutY="114.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="67.0" style="-fx-border-radius: 100;" text="Search" />
-      <Label fx:id="sent" layoutX="323.0" layoutY="748.0" text="Currently processing:" />
-      <Button fx:id="stop" layoutX="77.0" layoutY="743.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="170.0" style="-fx-background-color: RED;" text="STOP THE PROCESS" textFill="WHITE" />
-      <Label text="None." fx:id="cp" layoutX="475.0" layoutY="748.0" prefHeight="16.0" prefWidth="1000.0" />
+      <Label fx:id="sent" layoutX="264.0" layoutY="621.0" text="Currently processing:" />
+      <Button fx:id="stop" layoutX="70.0" layoutY="616.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="170.0" style="-fx-background-color: RED;" text="STOP THE PROCESS" textFill="WHITE" />
+      <Label fx:id="cp" layoutX="413.0" layoutY="621.0" prefHeight="16.0" prefWidth="1000.0" text="None." />
    </children>
 </AnchorPane>

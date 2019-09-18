@@ -1,5 +1,5 @@
 <component name="ArtifactManager">
-  <artifact type="javafx" build-on-make="true" name="MLC-Europe---Bitrix-Maill-Application">
+  <artifact type="javafx" name="MLC-Europe---Bitrix-Maill-Application">
     <output-path>$PROJECT_DIR$/out/artifacts/MLC_Europe___Bitrix_Maill_Application</output-path>
     <properties id="javafx-properties">
       <options>
@@ -15,10 +15,10 @@
       <element id="archive" name="MLC_Europe___Bitrix_Maill_Application.jar">
         <element id="module-output" name="MLC-Europe---Bitrix-Maill-Application" />
       </element>
-      <element id="library" level="application" name="mysql:mysql-connector-java:8.0.17" />
+      <element id="library" level="application" name="com.goebl:david-webb:1.3.0" />
       <element id="library" level="application" name="com.sun.mail:javax.mail:1.6.2" />
       <element id="library" level="application" name="com.google.code.gson:gson:2.8.5" />
-      <element id="library" level="application" name="com.goebl:david-webb:1.3.0" />
+      <element id="library" level="application" name="mysql:mysql-connector-java:8.0.171" />
     </root>
   </artifact>
 </component>

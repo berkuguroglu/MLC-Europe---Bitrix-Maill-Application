@@ -121,7 +121,7 @@ public class databaseConnection {
         new Thread(st).start();
         return st.get();
     }
-    public Task<Boolean> updateCompany(String id, String email, String state) throws ExecutionException, InterruptedException, SQLException {
+    public Task<Boolean> updateCompany(String id, String email, String state, String country, String phone) throws ExecutionException, InterruptedException, SQLException {
          Task<Boolean> task = new Task<Boolean>() {
              @Override
              protected Boolean call() throws Exception {
@@ -129,7 +129,7 @@ public class databaseConnection {
                  if(!this.isDone())
                  {
                      Statement st = con.createStatement();
-                     String query = "UPDATE COMPANIES SET company_email = '" + email + "', state = '" + state + "' WHERE id = " + id;
+                     String query = "UPDATE COMPANIES SET company_email = '" + email + "', phone = '" + phone + "', state = '" + state + "', country = '" + country + "' WHERE id = " + id;
                      try {
                          System.out.println(st.execute(query));
                          con.close();
@@ -174,7 +174,7 @@ public class databaseConnection {
                                 hashMap.put("company_email", rst.getString("company_email"));
                                 hashMap.put("state", rst.getString("state"));
                                 hashMap.put("lastcontacted", rst.getString("lastcontacted"));
-                                new Company(rst.getInt("id"), rst.getString("company_name"), Integer.parseInt(rst.getString("responsible_person")), getSalesTeam(), rst.getString("company_email"), rst.getString("state"), rst.getString("status"), rst.getString("lastcontacted"), rst.getString("country"));
+                                new Company(rst.getInt("id"), rst.getString("company_name"), Integer.parseInt(rst.getString("responsible_person")), getSalesTeam(), rst.getString("company_email"), rst.getString("state"), rst.getString("status"), rst.getString("lastcontacted"), rst.getString("country"), rst.getString("phone"));
 
                             } catch (Exception ex) {
                                 ex.printStackTrace();
@@ -213,7 +213,7 @@ public class databaseConnection {
                                 hashMap.put("company_email", rst.getString("company_email"));
                                 hashMap.put("state", rst.getString("state"));
                                 hashMap.put("lastcontacted", rst.getString("lastcontacted"));
-                                new Company(rst.getInt("id"), rst.getString("company_name"), Integer.parseInt(rst.getString("responsible_person")), getSalesTeam(), rst.getString("company_email"), rst.getString("state"), rst.getString("status"), rst.getString("lastcontacted"), rst.getString("country"));
+                                new Company(rst.getInt("id"), rst.getString("company_name"), Integer.parseInt(rst.getString("responsible_person")), getSalesTeam(), rst.getString("company_email"), rst.getString("state"), rst.getString("status"), rst.getString("lastcontacted"), rst.getString("country"), rst.getString("phone"));
 
                             } catch (Exception ex) {
                                 ex.printStackTrace();
@@ -256,15 +256,15 @@ public class databaseConnection {
        new Thread(st).start();
        return st.get();
    }
-    public int saveCompanies(int id, String company_name, String responsible_person, String country, String state, String status, String company_email, String templates) throws ExecutionException, InterruptedException {
+    public int saveCompanies(int id, String company_name, String responsible_person, String country, String state, String status, String company_email, String templates, String phone) throws ExecutionException, InterruptedException {
         Task<Integer> st = new Task<Integer>()
         {
             @Override
             protected Integer call() throws Exception {
 
                 if(!this.isDone()) {
-                    String query = "INSERT INTO COMPANIES (id, company_name, responsible_person, country, status, company_email, state) VALUES('"
-                            + id + "', '" + company_name + "', '" + responsible_person + "', '" + country + "', '" + status + "', '" + company_email + "', '" + state + "')";
+                    String query = "INSERT INTO COMPANIES (id, company_name, responsible_person, country, status, company_email, state, phone) VALUES('"
+                            + id + "', '" + company_name + "', '" + responsible_person + "', '" + country + "', '" + status + "', '" + company_email + "', '" + state + "', '" + phone + "')";
                     try {
                         databaseConnection.this.st.execute(query);
 

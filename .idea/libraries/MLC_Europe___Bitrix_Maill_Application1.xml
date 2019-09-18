@@ -1,0 +1,15 @@
+<component name="libraryTable">
+  <library name="MLC_Europe___Bitrix_Maill_Application1">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/out/artifacts/MLC_Europe___Bitrix_Maill_Application/mysql-connector-java-8.0.17.jar!/" />
+      <root url="jar://$PROJECT_DIR$/out/artifacts/MLC_Europe___Bitrix_Maill_Application/gson-2.8.5.jar!/" />
+      <root url="jar://$PROJECT_DIR$/out/artifacts/MLC_Europe___Bitrix_Maill_Application/david-webb-1.3.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/out/artifacts/MLC_Europe___Bitrix_Maill_Application/MLC_Europe___Bitrix_Maill_Application.jar!/" />
+      <root url="jar://$PROJECT_DIR$/out/artifacts/MLC_Europe___Bitrix_Maill_Application/json-20080701.jar!/" />
+      <root url="jar://$PROJECT_DIR$/out/artifacts/MLC_Europe___Bitrix_Maill_Application/javax.mail-1.6.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/out/artifacts/MLC_Europe___Bitrix_Maill_Application/protobuf-java-3.6.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

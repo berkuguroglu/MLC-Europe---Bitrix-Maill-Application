@@ -13,6 +13,8 @@ import javafx.scene.layout.Priority;
 import javax.mail.*;
 import javax.activation.*;
 import javax.mail.internet.*;
+import java.io.File;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.SQLException;
@@ -71,30 +73,42 @@ import static Login.Mail.Mail.Templates.produceMessage;
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress(myAccountEmail));
             message.setRecipient(Message.RecipientType.TO, new InternetAddress(recepient));
-            message.setSubject("MLC Europe");
+            if(country.equals("England") || country.equals("Unknown"))
+                message.setSubject("MLC Europe GmbH (Electronic Components Distributor)");
+            else if(country.equals("Germany"))
+                message.setSubject("MLC Europe GmbH (Elektronischen Bauteilen Distributor)");
+            else if(country.equals("Spain"))
+                message.setSubject("MLC Europe GmbH (Distribuidor de componentes electronicos)");
+            else if(country.equals("Italy"))
+                message.setSubject("MLC Europe GmbH (Distributore di componenti elettronici)");
+            else if(country.equals("Finland"))
+                message.setSubject("MLC Europe GmbH ( Elektronisten komponenttien jakelija)");
+            else if(country.equals("Austria"))
+                message.setSubject("MLC Europe GmbH (Elektronischen Bauteilen Distributor)");
+            else if(country.equals("Sweden"))
+                message.setSubject("MLC Europe GmbH (Elektronischen Bauteilen Distributor)");
+            else if(country.equals("Bulgaria"))
+                message.setSubject("MLC Europe GmbH (Electronic Components Distributor)");
+            else if(country.equals("Turkey"))
+                message.setSubject("MLC Europe GmbH (Electronic Components Distributor)");
+            else if(country.equals("United Kingdom"))
+                message.setSubject("MLC Europe GmbH (Electronic Components Distributor)");
+            else if(country.equals("Greece"))
+                message.setSubject("MLC Europe GmbH (Electronic Components Distributor)");
+            else if(country.equals("France"))
+                message.setSubject("MLC Europe GmbH (Electronic Components Distributor)");
+            else
+                message.setSubject("MLC Europe GmbH (Electronic Components Distributor)");
+
+
 
             Multipart multipart = new MimeMultipart();
-
-
-            String filename = getClass().getResource("MLC_Europe_GmbH_Catalog.pdf").getPath();
-            String filetwo = getClass().getResource("MLC_Europe_GmbH_Line_Card.pdf").getPath();
-            DataSource source =  new FileDataSource(filename);
 
             BodyPart content = new MimeBodyPart();
             content.setText(produceMessage(this.responsiblePerson, this.salesname, country, recepient, this.myAccountEmail));
 
-            BodyPart messageBodyPart = new MimeBodyPart();
-            messageBodyPart.setDataHandler(new DataHandler(source));
-            messageBodyPart.setFileName(filename);
-            multipart.addBodyPart(messageBodyPart);
-            BodyPart secondBodyPart = new MimeBodyPart();
             multipart.addBodyPart(content);
 
-
-            source = new FileDataSource(filetwo);
-            secondBodyPart.setDataHandler(new DataHandler(source));
-            secondBodyPart.setFileName(filetwo);
-            multipart.addBodyPart(secondBodyPart);
 
             message.setContent(multipart);
             return message;

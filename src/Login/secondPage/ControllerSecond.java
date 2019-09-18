@@ -80,6 +80,9 @@ public class ControllerSecond implements EventHandler<MouseEvent> {
     private TableColumn<Company, String> resp;
 
     @FXML
+    private TableColumn<Company, String> phone_number;
+
+    @FXML
     private TableColumn<Company, String> sale;
 
     @FXML
@@ -110,6 +113,7 @@ public class ControllerSecond implements EventHandler<MouseEvent> {
         columns.add(country);
         columns.add(status);
         columns.add(sale);
+        columns.add(phone_number);
         process.setOnMouseClicked(this);
         indicator.setVisible(false);
         bitrixbutton.setOnMouseClicked(this::bitrix);
@@ -175,6 +179,7 @@ public class ControllerSecond implements EventHandler<MouseEvent> {
                                     table.setDisable(false);
                                     indicator.setVisible(false);
                                     ObservableList<Company> data = FXCollections.observableList(Company.list);
+                                    count.setText("Companies on the list: " + Company.list.size());
                                     if (data.size() == 0) process.setDisable(true);
                                     Platform.runLater(new Runnable() {
                                         @Override
@@ -289,12 +294,13 @@ public class ControllerSecond implements EventHandler<MouseEvent> {
                         databaseConnection db = new databaseConnection();
                         db.openConnection();
                         try {
-                            db.updateCompany(d.getResult().get("ID"), d.getResult().get("Email"), d.getResult().get("State")).setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+                            db.updateCompany(d.getResult().get("ID"), d.getResult().get("Email"), d.getResult().get("State"), d.getResult().get("Country"), d.getResult().get("phone")).setOnSucceeded(new EventHandler<WorkerStateEvent>() {
                                 @Override
                                 public void handle(WorkerStateEvent workerStateEvent) {
                                     Company comp = Company.find(Integer.parseInt(d.getResult().get("ID")));
                                     comp.setEmail(d.getResult().get("Email"));
                                     comp.setStater(d.getResult().get("State"));
+                                    comp.setCountry(d.getResult().get("Country"));
                                     Platform.runLater(new Runnable() {
                                         @Override
                                         public void run() {
@@ -426,6 +432,7 @@ public class ControllerSecond implements EventHandler<MouseEvent> {
         sale.setCellValueFactory(new PropertyValueFactory<Company, String>("stater"));
         status.setCellValueFactory(new PropertyValueFactory<Company, String>("status"));
         date.setCellValueFactory(new PropertyValueFactory<Company, String>("date"));
+        phone_number.setCellValueFactory(new PropertyValueFactory<Company, String>("phone_number"));
         company_name.setSortable(false);
         resp.setSortable(false);
         company_id.setSortable(false);
@@ -434,6 +441,7 @@ public class ControllerSecond implements EventHandler<MouseEvent> {
         sale.setSortable(false);
         status.setSortable(false);
         date.setSortable(false);
+        phone_number.setSortable(false);
         company_name.setSortable(false);
         company_name.setReorderable(false);
         resp.setReorderable(false);
@@ -472,12 +480,13 @@ public class ControllerSecond implements EventHandler<MouseEvent> {
                     databaseConnection db = new databaseConnection();
                     db.openConnection();
                     try {
-                        db.updateCompany(d.getResult().get("ID"), d.getResult().get("Email"), d.getResult().get("State")).setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+                        db.updateCompany(d.getResult().get("ID"), d.getResult().get("Email"), d.getResult().get("State"), d.getResult().get("Country"), d.getResult().get("phone")).setOnSucceeded(new EventHandler<WorkerStateEvent>() {
                             @Override
                             public void handle(WorkerStateEvent workerStateEvent) {
                                 Company comp = Company.find(Integer.parseInt(d.getResult().get("ID")));
                                 comp.setEmail(d.getResult().get("Email"));
                                 comp.setStater(d.getResult().get("State"));
+                                comp.setCountry(d.getResult().get("Country"));
                                 Platform.runLater(new Runnable() {
                                     @Override
                                     public void run() {
@@ -554,7 +563,7 @@ public class ControllerSecond implements EventHandler<MouseEvent> {
                                     if (String.valueOf(data.get(t).getRespPersonID()).equals(opt.get().split("-", 3)[0].trim())) {
                                         if ((data.get(t).getStatus().equals("Waiting") || data.get(t).getStatus().equals("Send again") || data.get(t).getStatus().equals("Failed")) && !Objects.equals(data.get(t).getStater(), "Sale")) { // we will see
                                             size += 1;
-                                            Mail obj = new Mail(data.get(t).getRespPersonID(), data.get(t).getEmail(), "English", size, ct, onesRemoved, remove);
+                                            Mail obj = new Mail(data.get(t).getRespPersonID(), data.get(t).getEmail(), data.get(t).getCountry(), size, ct, onesRemoved, remove);
                                             Mail.queue.get(ct).add(obj);
                                             int finalT = t;
                                             int finalSize = size;

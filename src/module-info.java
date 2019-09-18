@@ -7,7 +7,7 @@ module JavaFxApplication {
     requires gson;
     requires david.webb;
     requires java.mail;
-    requires java.activation;
+    requires activation;
     opens Login.secondPage;
     opens Login;
 }

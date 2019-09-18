@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="MLC_Europe___Bitrix_Maill_Application">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/out/artifacts/MLC_Europe___Bitrix_Maill_Application.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

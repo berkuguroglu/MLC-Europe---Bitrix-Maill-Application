@@ -82,6 +82,7 @@ public class companyDialog extends Dialog<HashMap<String, String>> implements Di
                                 changed.put("ID", String.valueOf(companyDialog.this.id));
                                 changed.put("Email", companyDialog.this.email);
                                 changed.put("State", companyDialog.this.state);
+                                changed.put("Country", companyDialog.this.country);
                                 return changed;
 
                             }
@@ -110,6 +111,14 @@ public class companyDialog extends Dialog<HashMap<String, String>> implements Di
     public void changeState(String state) {
         if(!this.state.equals(state)) {
             this.state = state;
+            this.changes = true;
+        }
+
+    }
+    @Override
+    public void changeCountry(String country) {
+        if(!this.country.equals(country.trim())) {
+            this.country = country;
             this.changes = true;
         }
 
